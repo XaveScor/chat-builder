@@ -1,7 +1,8 @@
 // @flow
 import * as pageTypes from './pageTypes';
 import {runStep} from './runStep';
-import type {Config, SchemeF, PrevousPageResult, NotifyViewEvent, StepResult} from './types';
+import type {NotifyViewEvent} from './types';
+import {type StepResult, type PrevousPageResult, Page} from './createPage';
 import {createEvent, type EventType} from './event';
 import * as React from 'react';
 
@@ -11,7 +12,7 @@ export type EditEvent = EventType<{
 }>
 
 export async function runConforms(
-    schemeF: SchemeF,
+    initPage: Page,
     viewEvents: {
         notifyView: NotifyViewEvent,
     },
@@ -23,7 +24,13 @@ export async function runConforms(
 
     const editEvent: EditEvent = createEvent();
 
+    let currentPage = initPage;
     while (true) {
+        const {name, schemeF} = currentPage;
+        if (schemeF == null) {
+            console.error(`You should declare schemeF in ${name || 'createPage'}.use method`);
+            break;
+        }
         const currentPart = await schemeF(result);
         if (currentPart.nextPage === pageTypes.Stop) {
             return;
@@ -49,9 +56,10 @@ export async function runConforms(
         }
 
         result = {
-            prevousPage: currentPart.nextPage,
+            prevousPage: currentPage,
             steps: results,
         }
+        currentPage = currentPart.nextPage
         unsubscribe();
     }
 }

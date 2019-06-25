@@ -1,5 +1,6 @@
 // @flow
-import type {Step, NotifyViewEvent} from './types';
+import type {NotifyViewEvent} from './types';
+import type {Step} from './createPage';
 import {createSingleHistoryBlock, createTripleHistoryBlock} from './historyBlock';
 import type {EditEvent} from './runConforms';
 

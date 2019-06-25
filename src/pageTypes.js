@@ -1,9 +1,9 @@
 /* @flow */
-export const Start: 'INTERNAL_Start' = 'INTERNAL_Start';
-export const Repeat: 'INTERNAL_Repeat' = 'INTERNAL_Repeat';
-export const Stop: 'INTERNAL_Stop' = 'INTERNAL_Stop';
+import {createPage} from './createPage'
+
+export const Start = createPage('Start conforms');
+export const Stop = createPage('Stop conforms');
 
 export type PageType =
     | typeof Start
-    | typeof Repeat
-    | typeof Stop;
+    | typeof Stop

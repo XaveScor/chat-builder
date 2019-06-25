@@ -2,7 +2,7 @@
 import * as React from 'react';
 import {createEvent, type EventType} from './event';
 import {ParseError} from './ParseError';
-import type {SingleStep, TripleStep} from './types';
+import type {SingleStep, TripleStep} from './createPage';
 
 type CreateSingleHistoryBlockArgs = {
     config: SingleStep<*>,
@@ -26,7 +26,6 @@ export function createSingleHistoryBlock({
     function setAnswer(answer: string) {
         return true;
     }
-
 
     return {
         view: {

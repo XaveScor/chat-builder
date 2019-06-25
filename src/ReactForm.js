@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react';
-import type {SchemeF} from './types';
+import {Page} from './createPage';
 import { runConforms } from './runConforms';
 import {createEvent} from './event';
 import type {ViewData} from './historyBlock';
@@ -23,10 +23,10 @@ const Dialog = ({views, onChange, hideAnswer, onSelect}: DialogProps) => views.m
 });
 
 type Props = {
-    scheme: SchemeF,
+    page: Page,
 }
 
-export const ConformsForm = ({scheme}: Props) => {
+export const ConformsForm = ({page}: Props) => {
     const [views, setViews] = React.useState<$ReadOnlyArray<ViewData>>([]);
     const [savedViews, setSavedViews] = React.useState<$ReadOnlyArray<ViewData> | null>(null);
     const [, setKey] = React.useState<number>(0);
@@ -34,7 +34,7 @@ export const ConformsForm = ({scheme}: Props) => {
 
     React.useEffect(() => {
         const notifyViewEvent = createEvent<ViewData>();
-        runConforms(scheme, {
+        runConforms(page, {
             notifyView: notifyViewEvent,
         });
 
