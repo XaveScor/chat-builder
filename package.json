@@ -21,7 +21,7 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "flow-bin": "^0.101.1",
+    "flow-bin": "^0.102.0",
     "path": "^0.12.7",
     "rollup": "^1.16.2",
     "rollup-plugin-babel": "^4.3.3",
