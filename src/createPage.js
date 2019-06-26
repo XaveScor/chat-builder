@@ -35,12 +35,15 @@ export type Step =
     | SingleStep<*>
     | TripleStep<*, *, *>
 
-type Config = {
+type Config = {|
     nextPage: TotalPage,
     steps: $ReadOnlyArray<Step>,
-};
+|};
 
-type SchemeF = (PrevousPageResult) => Promise<Config>;
+export type SchemeF = 
+    | ((PrevousPageResult) => Promise<Config>)
+    | ((PrevousPageResult) => Config)
+    | Config
 
 export class Page {
     name: ?string

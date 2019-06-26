@@ -2,7 +2,7 @@
 import * as pageTypes from './pageTypes';
 import {runStep} from './runStep';
 import type {NotifyViewEvent} from './types';
-import {type StepResult, type PrevousPageResult, Page} from './createPage';
+import {type StepResult, type PrevousPageResult, type SchemeF, Page} from './createPage';
 import {createEvent, type EventType} from './event';
 import * as React from 'react';
 
@@ -10,6 +10,14 @@ export type EditEvent = EventType<{
     id: number,
     result: any,
 }>
+
+async function callSchemeF(result: PrevousPageResult, schemeF: SchemeF) {
+    if (typeof schemeF === 'function') {
+        return Promise.resolve(schemeF(result))
+    }
+
+    return schemeF
+}
 
 export async function runConforms(
     initPage: Page,
@@ -31,7 +39,7 @@ export async function runConforms(
             console.error(`You should declare schemeF in ${name || 'createPage'}.use method`);
             break;
         }
-        const currentPart = await schemeF(result);
+        const currentPart = await callSchemeF(result, schemeF);
         if (currentPart.nextPage === pageTypes.Stop) {
             return;
         }
