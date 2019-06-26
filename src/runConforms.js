@@ -22,6 +22,7 @@ async function callSchemeF(result: PrevousPageResult, schemeF: SchemeF) {
 async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T> {
     return new Promise((resolve, reject) => {
         let resolved = false;
+        console.log(duration);
         setTimeout(() => {
             if (!resolved) {
                 resolved = true;
@@ -53,11 +54,10 @@ export async function runConforms(
         }
         const currentPart = await callSchemeF(result, schemeF);
         const {nextPage, steps, timeout} = currentPart;
-        if (nextPage === pageTypes.Stop) {
-            return;
-        }
 
         const duration = timeout != null ? timeout.duration : 0;
+
+        console.error(duration)
 
         try {
             const res = await withTimeout(async () => {
@@ -97,6 +97,10 @@ export async function runConforms(
                 steps: [],
             }
             currentPage = timeout ? timeout.page : nextPage
+        }
+
+        if (currentPage === pageTypes.Stop) {
+            return;
         }
     }
 }
