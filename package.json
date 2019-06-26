@@ -1,9 +1,20 @@
 {
-  "name": "conforms",
+  "name": "chat-builder",
   "version": "0.2.0",
+  "description": "",
+  "author": {
+    "email": "xavescor@gmail.com",
+    "name": "XaveScor"
+  },
+  "license": "MIT",
+  "repository": "github:xavescor/conforms",
   "peerDependencies": {
     "react": "^16.8.6"
   },
+  "files": [
+    "dist/bundle.js"
+  ],
+  "main": "dist/bundle.js",
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
