@@ -35,9 +35,15 @@ export type Step =
     | SingleStep<*>
     | TripleStep<*, *, *>
 
+export type TimeoutConfig = {|
+    duration: number,
+    page: TotalPage,
+|}
+
 type Config = {|
     nextPage: TotalPage,
     steps: $ReadOnlyArray<Step>,
+    timeout?: TimeoutConfig,
 |};
 
 export type SchemeF = 

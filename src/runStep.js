@@ -1,15 +1,15 @@
 // @flow
 import type {NotifyViewEvent} from './types';
-import type {Step} from './createPage';
+import type {Step, TimeoutConfig} from './createPage';
 import {createSingleHistoryBlock, createTripleHistoryBlock} from './historyBlock';
 import type {EditEvent} from './runConforms';
 
-type Args = {
+type Args = {|
     config: Step,
     notifyView: NotifyViewEvent,
     idx: number,
     editEvent: EditEvent,
-}
+|}
 
 export async function runStep({
     config,

@@ -19,6 +19,20 @@ async function callSchemeF(result: PrevousPageResult, schemeF: SchemeF) {
     return schemeF
 }
 
+async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T> {
+    return new Promise((resolve, reject) => {
+        let resolved = false;
+        setTimeout(() => {
+            if (!resolved) {
+                resolved = true;
+                reject()
+            }
+        }, duration)
+
+        f().then(resolve).catch(reject)
+    })
+}
+
 export async function runConforms(
     initPage: Page,
     viewEvents: {
@@ -30,8 +44,6 @@ export async function runConforms(
         steps: [],
     };
 
-    const editEvent: EditEvent = createEvent();
-
     let currentPage = initPage;
     while (true) {
         const {name, schemeF} = currentPage;
@@ -40,34 +52,51 @@ export async function runConforms(
             break;
         }
         const currentPart = await callSchemeF(result, schemeF);
-        if (currentPart.nextPage === pageTypes.Stop) {
+        const {nextPage, steps, timeout} = currentPart;
+        if (nextPage === pageTypes.Stop) {
             return;
         }
 
-        const results: Array<StepResult> = [];
-        const unsubscribe = editEvent.watch(res => {
-            results[res.id].value = res.result;
-        })
+        const duration = timeout != null ? timeout.duration : 0;
 
-        for (let i = 0; i < currentPart.steps.length; ++i) {
-            const step = currentPart.steps[i];
-            const stepResult = await runStep({
-                config: step,
-                notifyView: viewEvents.notifyView,
-                idx: i,
-                editEvent,
-            });
-            results.push({
-                id: step.id,
-                value: stepResult,
-            });
-        }
+        try {
+            const res = await withTimeout(async () => {
+                const results: Array<StepResult> = [];
+                const editEvent: EditEvent = createEvent();
+                const unsubscribe = editEvent.watch(res => {
+                    results[res.id].value = res.result;
+                })
 
-        result = {
-            prevousPage: currentPage,
-            steps: results,
+                for (let i = 0; i < steps.length; ++i) {
+                    const step = steps[i];
+                    const stepResult = await runStep({
+                        config: step,
+                        notifyView: viewEvents.notifyView,
+                        idx: i,
+                        editEvent,
+                    });
+                    results.push({
+                        id: step.id,
+                        value: stepResult,
+                    });
+                }
+                
+                unsubscribe();
+
+                return results;
+            }, duration)
+
+            result = {
+                prevousPage: currentPage,
+                steps: res,
+            }
+            currentPage = nextPage
+        } catch (_) {
+            result = {
+                prevousPage: currentPage,
+                steps: [],
+            }
+            currentPage = timeout ? timeout.page : nextPage
         }
-        currentPage = currentPart.nextPage
-        unsubscribe();
     }
 }
