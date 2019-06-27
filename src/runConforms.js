@@ -22,7 +22,6 @@ async function callSchemeF(result: PrevousPageResult, schemeF: SchemeF) {
 async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T> {
     return new Promise((resolve, reject) => {
         let resolved = false;
-        console.log(duration);
         setTimeout(() => {
             if (!resolved) {
                 resolved = true;
