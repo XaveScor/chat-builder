@@ -1,13 +1,13 @@
 {
   "name": "chat-builder",
-  "version": "0.4.0",
+  "version": "0.5.1",
   "description": "",
   "author": {
     "email": "xavescor@gmail.com",
     "name": "XaveScor"
   },
   "license": "MIT",
-  "repository": "github:xavescor/conforms",
+  "repository": "github:xavescor/chat-builder",
   "peerDependencies": {
     "react": "^16.8.6"
   },
@@ -33,6 +33,7 @@
   },
   "scripts": {
     "build": "node ./scripts/build.js",
-    "test": "jest"
+    "test": "jest",
+    "release": "yarn test && yarn build && npm publish"
   }
 }
