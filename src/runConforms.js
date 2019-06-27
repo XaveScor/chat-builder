@@ -57,8 +57,6 @@ export async function runConforms(
 
         const duration = timeout != null ? timeout.duration : 0;
 
-        console.error(duration)
-
         try {
             const res = await withTimeout(async () => {
                 const results: Array<StepResult> = [];
