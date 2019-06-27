@@ -10,7 +10,7 @@ type DialogProps = {
     views: $ReadOnlyArray<ViewData>,
     onChange: (number) => void,
     hideAnswer: boolean,
-    onSelect: any => void,
+    onSelect: string => void,
 }
 const Dialog = ({views, onChange, hideAnswer, onSelect}: DialogProps) => views.map((v, idx) => {
     const Component = v.getRenderComponent();
@@ -86,19 +86,15 @@ export const ConformsForm = ({page}: Props) => {
 
     const currentView = views[views.length - 1];
 
-    function changeValue(e: SyntheticInputEvent<>) {
-        setValue(e.target.value);
-    }
-
-    function submit() {
+    const submit = React.useCallback(() => {
         currentView.setAnswer(value);
         onSubmit();
         reload();
-    }
+    });
 
+    const Input = currentView.Input;
     return <>
         <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={onSelect} />
-        <input value={value} onChange={changeValue} />
-        <input type='submit' onClick={submit} />
+        <Input onChange={setValue} onSubmit={submit} value={value} />
     </>
 }

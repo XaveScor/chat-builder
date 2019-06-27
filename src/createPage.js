@@ -5,6 +5,7 @@ import type {SinglePhrase, TriplePhrase} from './createPhrase';
 import * as React from 'react';
 import type {EventType} from './event';
 import type {ViewData} from './historyBlock';
+import type {Input} from './createInput'
 
 type TotalPage = Page | PageType
 
@@ -22,6 +23,7 @@ export type SingleStep<T> = {|
     ...$Exact<SinglePhrase<T>>,
     question: T,
     id: any,
+    input: Input,
 |};
 
 export type TripleStep<Tq, Ta, Te> = {|
@@ -29,6 +31,7 @@ export type TripleStep<Tq, Ta, Te> = {|
     question: Tq,
     error: Te,
     id: any,
+    input: Input,
 |};
 
 export type Step =

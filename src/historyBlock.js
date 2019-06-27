@@ -31,6 +31,7 @@ export function createSingleHistoryBlock({
         view: {
             setAnswer,
             getRenderComponent,
+            Input: config.input,
         },
     }
 }
@@ -106,6 +107,7 @@ export function createTripleHistoryBlock({
         view: {
             setAnswer,
             getRenderComponent,
+            Input: config.input,
         },
         subscribeAnswer,
     }
