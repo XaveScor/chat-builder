@@ -43,16 +43,26 @@ export type TimeoutConfig = {|
     page: TotalPage,
 |}
 
-type Config = {|
-    nextPage: TotalPage,
+export type NonFunction = 
+    | {}
+    | string
+    | number
+    | boolean
+
+export type MapPrevousPage<T: NonFunction> = 
+    | (PrevousPageResult => Promise<T>)
+    | (PrevousPageResult => T)
+    | T
+
+type NextPage = MapPrevousPage<TotalPage>
+
+export type Config = {|
+    nextPage: NextPage,
     steps: $ReadOnlyArray<Step>,
     timeout?: TimeoutConfig,
 |};
 
-export type SchemeF = 
-    | ((PrevousPageResult) => Promise<Config>)
-    | ((PrevousPageResult) => Config)
-    | Config
+export type SchemeF = MapPrevousPage<Config>
 
 export class Page {
     name: ?string

@@ -2,7 +2,14 @@
 import * as pageTypes from './pageTypes';
 import {runStep} from './runStep';
 import type {NotifyViewEvent} from './types';
-import {type StepResult, type PrevousPageResult, type SchemeF, Page} from './createPage';
+import {
+    type StepResult,
+    type PrevousPageResult,
+    type MapPrevousPage,
+    type NonFunction,
+    type Config,
+    Page
+} from './createPage';
 import {createEvent, type EventType} from './event';
 import * as React from 'react';
 
@@ -11,12 +18,15 @@ export type EditEvent = EventType<{
     result: any,
 }>
 
-async function callSchemeF(result: PrevousPageResult, schemeF: SchemeF) {
-    if (typeof schemeF === 'function') {
-        return Promise.resolve(schemeF(result))
+async function callPrevousPageF<T: NonFunction>(
+    result: PrevousPageResult,
+    map: MapPrevousPage<T>,
+): Promise<T> {
+    if (typeof map === 'function') {
+        return Promise.resolve(map(result))
     }
 
-    return schemeF
+    return map
 }
 
 async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T> {
@@ -51,7 +61,8 @@ export async function runConforms(
             console.error(`You should declare schemeF in ${name || 'createPage'}.use method`);
             break;
         }
-        const currentPart = await callSchemeF(result, schemeF);
+        // TODO: fix flow type inference
+        const currentPart: Config = await callPrevousPageF(result, schemeF);
         const {nextPage, steps, timeout} = currentPart;
 
         const duration = timeout != null ? timeout.duration : 0;
@@ -87,13 +98,17 @@ export async function runConforms(
                 prevousPage: currentPage,
                 steps: res,
             }
-            currentPage = nextPage
+            currentPage = await callPrevousPageF(result, nextPage)
         } catch (_) {
             result = {
                 prevousPage: currentPage,
                 steps: [],
             }
-            currentPage = timeout ? timeout.page : nextPage
+            if (timeout) {
+                currentPage = timeout.page
+            } else {
+                currentPage = await callPrevousPageF(result, nextPage)
+            }
         }
 
         if (currentPage === pageTypes.Stop) {
