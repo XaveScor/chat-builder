@@ -32,26 +32,25 @@ export const ConformsForm = ({page}: Props) => {
     const [, setKey] = React.useState<number>(0);
     const [value, setValue] = React.useState<string>('');
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         const notifyViewEvent = createEvent<ViewData>();
+
+        const unsubscribe = notifyViewEvent.watch(viewData => {
+            setViews(old => old.concat(viewData));
+        });
+
         runConforms(page, {
             notifyView: notifyViewEvent,
         });
 
-        return notifyViewEvent.watch(viewData => {
-            setViews(old => old.concat(viewData));
-        });
+        return unsubscribe;
     }, []);
-
-    if (views.length === 0) {
-        return null;
-    }
     
     function reload() {
         setKey(key => key + 1);
     }
 
-    function onChange(id) {
+    const onChange = React.useCallback((id) => {
         setViews(old => {
             setSavedViews(oldSavedViews => {
                 if (oldSavedViews == null) {
@@ -68,13 +67,9 @@ export const ConformsForm = ({page}: Props) => {
             }
             return ans;
         })
-    }
+    });
 
-    function onSelect(data) {
-        setValue(data);
-    }
-
-    function onSubmit() {
+    const onSubmit = React.useCallback(() =>  {
         setSavedViews(oldSavedViews => {
             if (oldSavedViews != null) {
                 setViews(oldSavedViews);
@@ -82,7 +77,7 @@ export const ConformsForm = ({page}: Props) => {
             }
             return oldSavedViews;
         })
-    }
+    });
 
     const currentView = views[views.length - 1];
 
@@ -92,9 +87,13 @@ export const ConformsForm = ({page}: Props) => {
         reload();
     });
 
+    if (views.length === 0) {
+        return null;
+    }
+
     const Input = currentView.Input;
     return <>
-        <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={onSelect} />
+        <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={setValue} />
         <Input onChange={setValue} onSubmit={submit} value={value} />
     </>
 }

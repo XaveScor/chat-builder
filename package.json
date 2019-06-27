@@ -26,6 +26,7 @@
     "jest": "^24.8.0",
     "path": "^0.12.7",
     "react": "^16.8.6",
+    "react-test-renderer": "^16.8.6",
     "rollup": "^1.16.2",
     "rollup-plugin-auto-external": "^2.0.0",
     "rollup-plugin-babel": "^4.3.3",
