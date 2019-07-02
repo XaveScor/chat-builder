@@ -51,3 +51,17 @@ const myInput = createInput({
 })
 ```
 В качестве примера смотрите [`input.js`](https://github.com/XaveScor/chat-builder/blob/master/src/controls/input.js) который идёт в составе библиотеки.
+
+- **useChatBuilder hook**
+```
+import {useChatBuilder} from 'chat-builder'
+
+const MyChat = (props) => {
+    const Chat = useChatBuilder(page)
+
+    return <Chat {...props} />
+}
+
+<MyChat a='foo' />
+```
+[`тесты`](https://github.com/XaveScor/chat-builder/blob/master/src/__tests__/useChatBuilder.test.js)
