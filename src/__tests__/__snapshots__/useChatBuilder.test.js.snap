@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`init props 1`] = `
+Array [
+  <p
+    className="robot"
+  >
+    correct props sharing
+  </p>,
+  <input
+    onChange={[Function]}
+    value=""
+  />,
+  <input
+    onClick={[Function]}
+    type="submit"
+  />,
+]
+`;
