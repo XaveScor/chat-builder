@@ -12,18 +12,20 @@ import {
 } from './createPage';
 import {createEvent, type EventType} from './event';
 import * as React from 'react';
+import type {Props} from './createProps'
 
 export type EditEvent = EventType<{
     id: number,
     result: any,
 }>
 
-async function callPrevousPageF<T: NonFunction>(
-    result: PrevousPageResult,
-    map: MapPrevousPage<T>,
+async function callPrevousPageF<TProps: {}, T: NonFunction>(
+    map: MapPrevousPage<TProps, T>,
+    result: PrevousPageResult<TProps>,
+    props: TProps,
 ): Promise<T> {
     if (typeof map === 'function') {
-        return Promise.resolve(map(result))
+        return Promise.resolve(map(result, props))
     }
 
     return map
@@ -43,26 +45,26 @@ async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T>
     })
 }
 
-export async function runConforms(
-    initPage: Page,
+export async function runConforms<TProps: {}>(
+    initPage: Page<TProps>,
     viewEvents: {
         notifyView: NotifyViewEvent,
     },
 ) {
-    let result: PrevousPageResult = {
+    let result: PrevousPageResult<TProps> = {
         prevousPage: pageTypes.Start,
         steps: [],
     };
 
     let currentPage = initPage;
     while (true) {
-        const {name, schemeF} = currentPage;
+        const {name, schemeF, props} = currentPage;
         if (schemeF == null) {
             console.error(`You should declare schemeF in ${name || 'createPage'}.use method`);
             break;
         }
         // TODO: fix flow type inference
-        const currentPart: Config = await callPrevousPageF(result, schemeF);
+        const currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData());
         const {nextPage, steps, timeout} = currentPart;
 
         const duration = timeout != null ? timeout.duration : 0;
@@ -98,7 +100,7 @@ export async function runConforms(
                 prevousPage: currentPage,
                 steps: res,
             }
-            currentPage = await callPrevousPageF(result, nextPage)
+            currentPage = await callPrevousPageF(nextPage, result, props)
         } catch (_) {
             result = {
                 prevousPage: currentPage,
@@ -107,7 +109,7 @@ export async function runConforms(
             if (timeout) {
                 currentPage = timeout.page
             } else {
-                currentPage = await callPrevousPageF(result, nextPage)
+                currentPage = await callPrevousPageF(nextPage, result, props)
             }
         }
 

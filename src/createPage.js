@@ -6,16 +6,17 @@ import * as React from 'react';
 import type {EventType} from './event';
 import type {ViewData} from './historyBlock';
 import type {Input} from './createInput'
+import {type Props, createProps} from './createProps'
 
-type TotalPage = Page | PageType
+type TotalPage<TProps> = Page<TProps> | PageType
 
 export type StepResult = {
     id: any,
     value: any,
 }
 
-export type PrevousPageResult = {
-    prevousPage: TotalPage,
+export type PrevousPageResult<TProps> = {
+    prevousPage: TotalPage<TProps>,
     steps: $ReadOnlyArray<StepResult>,
 };
 
@@ -38,9 +39,9 @@ export type Step =
     | SingleStep<*>
     | TripleStep<*, *, *>
 
-export type TimeoutConfig = {|
+export type TimeoutConfig<TProps> = {|
     duration: number,
-    page: TotalPage,
+    page: TotalPage<TProps>,
 |}
 
 export type NonFunction = 
@@ -49,33 +50,46 @@ export type NonFunction =
     | number
     | boolean
 
-export type MapPrevousPage<T: NonFunction> = 
-    | (PrevousPageResult => Promise<T>)
-    | (PrevousPageResult => T)
+export type MapPrevousPage<TProps, T: NonFunction> = 
+    | ((PrevousPageResult<TProps>, TProps) => Promise<T> | T)
     | T
 
-type NextPage = MapPrevousPage<TotalPage>
+type NextPage<TProps> = MapPrevousPage<TProps, TotalPage<TProps>>
 
-export type Config = {|
-    nextPage: NextPage,
+export type Config<TProps> = {|
+    nextPage: NextPage<TProps>,
     steps: $ReadOnlyArray<Step>,
-    timeout?: TimeoutConfig,
+    timeout?: TimeoutConfig<TProps>,
 |};
 
-export type SchemeF = MapPrevousPage<Config>
+export type SchemeF<TProps> = MapPrevousPage<TProps, Config<TProps>>
 
-export class Page {
-    name: ?string
-    schemeF: ?SchemeF
-    constructor(name?: string) {
+export class Page<TProps: {}> {
+    +name: ?string
+    schemeF: ?SchemeF<TProps>
+    +props: Props<TProps>
+    constructor(name?: ?string, props: Props<TProps>) {
         this.name = name
+        this.props = props
     }
 
-    use(schemeF: SchemeF) {
+    use(schemeF: SchemeF<TProps>) {
         this.schemeF = schemeF
     }
 }
 
-export function createPage(name?: string) {
-    return new Page(name)
+type CreatePageArg<TProps> = string | {|
+    name?: string,
+    props?: Props<TProps>,
+|}
+declare export function createPage(a?: string | {| name?: string |}): Page<{}>
+declare export function createPage<TProps>({| name?: string, props: Props<TProps> |}): Page<TProps>
+export function createPage<TProps: {}>(
+    arg?: CreatePageArg<TProps>
+): Page<TProps | {}> {
+    if (typeof arg === 'string' || arg == null) {
+        return new Page(arg, createProps())
+    }
+    const {name, props} = arg
+    return new Page<any>(name, props || createProps())
 }

@@ -22,11 +22,11 @@ const Dialog = ({views, onChange, hideAnswer, onSelect}: DialogProps) => views.m
     return <Component key={idx} onAnswerClick={onClick} hideAnswer={idx === views.length - 1 ? hideAnswer : false} onSelectElement={onSelect} />
 });
 
-type Props = {
-    page: Page,
+type Props<TProps> = {
+    page: Page<TProps>,
 }
 
-export const ConformsForm = ({page}: Props) => {
+export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
     const [views, setViews] = React.useState<$ReadOnlyArray<ViewData>>([]);
     const [savedViews, setSavedViews] = React.useState<$ReadOnlyArray<ViewData> | null>(null);
     const [, setKey] = React.useState<number>(0);
