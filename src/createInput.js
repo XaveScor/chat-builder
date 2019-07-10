@@ -1,19 +1,20 @@
 /* @flow */
 import * as React from 'react'
 
-type InputProps = {|
+type InputProps<T> = {|
+    ...$Exact<T>,
     onSubmit: void => void,
     onChange: string => void,
     value: string,
 |}
 
-export type Input = React.ComponentType<InputProps>
+export type Input<T> = React.ComponentType<InputProps<T>>
 
-type CreateInputArg = {|
-    component: Input,
+type CreateInputArg<T> = {|
+    component: Input<T>,
 |}
-export function createInput({
+export function createInput<T>({
     component,
-}: CreateInputArg) {
+}: CreateInputArg<T>) {
     return component
 }

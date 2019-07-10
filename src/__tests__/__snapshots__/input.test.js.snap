@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`input with props 1`] = `
+Array [
+  <p
+    className="robot"
+  >
+    
+  </p>,
+  "custom Input with a, value: 1",
+]
+`;
+
+exports[`renders correctly 1`] = `
+Array [
+  <p
+    className="robot"
+  >
+    
+  </p>,
+  <input
+    onChange={[Function]}
+    value=""
+  />,
+  <input
+    onClick={[Function]}
+    type="submit"
+  />,
+]
+`;

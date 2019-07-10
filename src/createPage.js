@@ -20,24 +20,31 @@ export type PrevousPageResult<TProps> = {
     steps: $ReadOnlyArray<StepResult>,
 };
 
-export type SingleStep<T> = {|
+type InputConfig<T: {}> = 
+| {|
+    component: Input<T>,
+    props: T,
+|}
+| Input<{}>
+
+export type SingleStep<T, Ti> = {|
     ...$Exact<SinglePhrase<T>>,
     question: T,
     id: any,
-    input: Input,
+    input: InputConfig<Ti>,
 |};
 
-export type TripleStep<Tq, Ta, Te> = {|
+export type TripleStep<Tq, Ta, Te, Ti> = {|
     ...$Exact<TriplePhrase<Tq, Ta, Te>>,
     question: Tq,
     error: Te,
     id: any,
-    input: Input,
+    input: InputConfig<Ti>,
 |};
 
 export type Step =
-    | SingleStep<*>
-    | TripleStep<*, *, *>
+    | SingleStep<*, *>
+    | TripleStep<*, *, *, *>
 
 export type TimeoutConfig<TProps> = {|
     duration: number,

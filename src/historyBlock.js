@@ -5,11 +5,11 @@ import {ParseError} from './ParseError';
 import type {SingleStep, TripleStep} from './createPage';
 
 type CreateSingleHistoryBlockArgs = {
-    config: SingleStep<*>,
+    config: SingleStep<*, *>,
 };
 
 type CreateTripleHistoryBlockArgs = {
-    config: TripleStep<*, *, *>,
+    config: TripleStep<*, *, *, *>,
 };
 
 export function createSingleHistoryBlock({

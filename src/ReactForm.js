@@ -26,6 +26,20 @@ type Props<TProps> = {
     page: Page<TProps>,
 }
 
+type ParseInputType<T> =
+    | React.ComponentType<T>
+    | {
+        component: React.ComponentType<T>,
+        props: T,
+    }
+// TODO: fix typings
+function createComponent(obj: ParseInputType<any>): React.ComponentType<any> {
+    if (typeof obj === 'object') {
+        return props => React.createElement(obj.component, obj.props, null)
+    }
+    return obj
+}
+
 export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
     const [views, setViews] = React.useState<$ReadOnlyArray<ViewData>>([]);
     const [savedViews, setSavedViews] = React.useState<$ReadOnlyArray<ViewData> | null>(null);
@@ -91,7 +105,7 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
         return null;
     }
 
-    const Input = currentView.Input;
+    const Input = createComponent(currentView.Input);
     return <>
         <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={setValue} />
         <Input onChange={setValue} onSubmit={submit} value={value} />

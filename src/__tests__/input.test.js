@@ -30,3 +30,33 @@ it('renders correctly', done => {
         done()
     }, 1000)
 });
+
+it('input with props', done => {
+    const startPage = createPage()
+
+    const CustomInput = ({a}) => `custom Input with a, value: ${a}`
+
+    startPage.use({
+        steps: [
+            {
+                ...simplePhrase,
+                question: '',
+                input: {
+                    component: CustomInput,
+                    props: {
+                        a: 1,
+                    }
+                },
+            }
+        ],
+        nextPage: Stop,
+    })
+    const tree = renderer
+        .create(<ConformsForm page={startPage} />)
+        
+    setTimeout(() => {
+        const res = tree.toJSON()
+        expect(res).toMatchSnapshot()
+        done()
+    }, 1000)
+});
