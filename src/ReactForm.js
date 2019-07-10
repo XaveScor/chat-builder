@@ -35,7 +35,10 @@ type ParseInputType<T> =
 // TODO: fix typings
 function createComponent(obj: ParseInputType<any>): React.ComponentType<any> {
     if (typeof obj === 'object') {
-        return props => React.createElement(obj.component, obj.props, null)
+        return props => React.createElement(obj.component, {
+            ...obj.props,
+            ...props,
+        }, null)
     }
     return obj
 }
