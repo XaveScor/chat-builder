@@ -65,16 +65,16 @@ export function createTripleHistoryBlock({
         sendAnswerEvent(obj);
     }
 
-    const ValidBlock = ({answer, onAnswerClick, onSelectElement}: ValidBlockProps) => React.createElement(config.component, {
-        question: config.question,
+    const ValidBlock = ({answer, question, onAnswerClick, onSelectElement}: ValidBlockProps) => React.createElement(config.component, {
+        question,
         answer,
         error: null,
         onAnswerClick,
         onSelectElement,
     }, null);
 
-    const InvalidBlock = ({answer}) => React.createElement(config.component, {
-        question: config.question,
+    const InvalidBlock = ({answer, question}) => React.createElement(config.component, {
+        question,
         answer,
         error: config.error,
         onAnswerClick: null,
@@ -83,14 +83,14 @@ export function createTripleHistoryBlock({
 
     const BlockList = ({onAnswerClick, hideAnswer, onSelectElement}: BlockListProps) => {
         if (hideAnswer) {
-            return <ValidBlock answer={null} onAnswerClick={null} onSelectElement={onSelectElement} />
+            return <ValidBlock question={config.question} answer={null} onAnswerClick={null} onSelectElement={onSelectElement} />
         }
         return (
             <>
                 {invalidAnswers.map((a, idx) => (
-                    <InvalidBlock answer={a} key={idx} />
+                    <InvalidBlock answer={a} key={idx} question={idx === 0 ? config.question : null} />
                 ))}
-                <ValidBlock answer={correctAnswer} onAnswerClick={onAnswerClick} onSelectElement={onSelectElement} />
+                <ValidBlock question={null} answer={correctAnswer} onAnswerClick={onAnswerClick} onSelectElement={onSelectElement} />
             </>
         )
     }

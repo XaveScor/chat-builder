@@ -13,7 +13,7 @@ const component = ({
     onSelectElement,
 }) => (
     <>
-        <p className='robot'>{question}</p>
+        {question != null && <p className='robot'>{question}</p>}
         {answer && <p className='answer'>{
             error || !onAnswerClick ? 
                 answer

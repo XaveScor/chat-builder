@@ -1,15 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`hide question on invalid answer 1`] = `
 Array [
   <p
     className="robot"
   >
-    
+    Question
+  </p>,
+  <p
+    className="answer"
+  >
+    asd
+  </p>,
+  <p
+    className="error"
+  >
+    Error
   </p>,
   <input
     onChange={[Function]}
-    value=""
+    value="asd"
   />,
   <input
     onClick={[Function]}
