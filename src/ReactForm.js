@@ -33,14 +33,11 @@ type ParseInputType<T> =
         props: T,
     }
 // TODO: fix typings
-function createComponent(obj: ParseInputType<any>): React.ComponentType<any> {
+function parseComponent(obj: ParseInputType<any>): any {
     if (typeof obj === 'object') {
-        return props => React.createElement(obj.component, {
-            ...obj.props,
-            ...props,
-        }, null)
+        return [obj.component, obj.props]
     }
-    return obj
+    return [obj, {}]
 }
 
 export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
@@ -114,11 +111,11 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
     if (views.length === 0) {
         return null;
     }
-
+    
     const currentView = views[views.length - 1];
-    const Input = createComponent(currentView.Input);
+    const [Input, inputProps] = parseComponent(currentView.Input);
     return <>
         <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={setValue} />
-        {!stopped && <Input onChange={setValue} onSubmit={submit} value={value} />}
+        {!stopped && <Input {...inputProps} onChange={setValue} onSubmit={submit} value={value} />}
     </>
 }
