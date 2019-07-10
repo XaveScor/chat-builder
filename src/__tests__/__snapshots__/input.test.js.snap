@@ -5,26 +5,16 @@ Array [
   <p
     className="robot"
   >
-    
+    123
   </p>,
   "custom Input with a, value: 1",
 ]
 `;
 
 exports[`renders correctly 1`] = `
-Array [
-  <p
-    className="robot"
-  >
-    
-  </p>,
-  <input
-    onChange={[Function]}
-    value=""
-  />,
-  <input
-    onClick={[Function]}
-    type="submit"
-  />,
-]
+<p
+  className="robot"
+>
+  
+</p>
 `;

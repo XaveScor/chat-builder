@@ -5,3 +5,4 @@ import type {ViewData} from './historyBlock';
 export type ValidateF = (string) => boolean;
 
 export type NotifyViewEvent = EventType<ViewData>;
+export type StopEvent = EventType<void>

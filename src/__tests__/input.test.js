@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {createPage, simplePhrase, input, ConformsForm, Stop} from '..'
-import * as renderer from 'react-test-renderer';
+import {createPage, simplePhrase, input, ConformsForm, Stop, questionPhrase} from '..'
+import * as renderer from 'react-test-renderer'
 
 async function delay(timeout) {
     return new Promise(resolve => {
@@ -39,8 +39,9 @@ it('input with props', done => {
     startPage.use({
         steps: [
             {
-                ...simplePhrase,
-                question: '',
+                ...questionPhrase,
+                question: '123',
+                error: 'ASD',
                 input: {
                     component: CustomInput,
                     props: {

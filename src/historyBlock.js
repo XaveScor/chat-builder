@@ -45,6 +45,7 @@ type ValidBlockProps = {
     answer: string | null,
     onAnswerClick: (() => void) | null,
     onSelectElement: any => void,
+    question: any,
 }
 
 export function createTripleHistoryBlock({
@@ -90,7 +91,7 @@ export function createTripleHistoryBlock({
                 {invalidAnswers.map((a, idx) => (
                     <InvalidBlock answer={a} key={idx} question={idx === 0 ? config.question : null} />
                 ))}
-                <ValidBlock question={null} answer={correctAnswer} onAnswerClick={onAnswerClick} onSelectElement={onSelectElement} />
+                <ValidBlock question={invalidAnswers.length === 0 ? config.question : null} answer={correctAnswer} onAnswerClick={onAnswerClick} onSelectElement={onSelectElement} />
             </>
         )
     }

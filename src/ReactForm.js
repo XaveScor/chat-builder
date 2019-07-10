@@ -45,19 +45,28 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
     const [savedViews, setSavedViews] = React.useState<$ReadOnlyArray<ViewData> | null>(null);
     const [, setKey] = React.useState<number>(0);
     const [value, setValue] = React.useState<string>('');
+    const [stopped, setStopped] = React.useState<boolean>(false)
 
     React.useLayoutEffect(() => {
         const notifyViewEvent = createEvent<ViewData>();
+        const stopEvent = createEvent<void>()
 
-        const unsubscribe = notifyViewEvent.watch(viewData => {
+        const unsubscribe = []
+        unsubscribe.push(notifyViewEvent.watch(viewData => {
             setViews(old => old.concat(viewData));
-        });
+        }))
+        unsubscribe.push(stopEvent.watch(() => {
+            setStopped(true)
+        }))
 
         runConforms(page, {
             notifyView: notifyViewEvent,
+            stopEvent,
         });
 
-        return unsubscribe;
+        return () => {
+            unsubscribe.forEach(e => e())
+        }
     }, []);
     
     function reload() {
@@ -93,10 +102,8 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
         })
     });
 
-    const currentView = views[views.length - 1];
-
     const submit = React.useCallback(() => {
-        currentView.setAnswer(value);
+        views[views.length - 1].setAnswer(value);
         onSubmit();
         reload();
     });
@@ -105,9 +112,10 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
         return null;
     }
 
+    const currentView = views[views.length - 1];
     const Input = createComponent(currentView.Input);
     return <>
         <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={setValue} />
-        <Input onChange={setValue} onSubmit={submit} value={value} />
+        {!stopped && <Input onChange={setValue} onSubmit={submit} value={value} />}
     </>
 }

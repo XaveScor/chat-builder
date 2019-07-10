@@ -1,7 +1,7 @@
 // @flow
 import * as pageTypes from './pageTypes';
 import {runStep} from './runStep';
-import type {NotifyViewEvent} from './types';
+import type {NotifyViewEvent, StopEvent} from './types';
 import {
     type StepResult,
     type PrevousPageResult,
@@ -34,12 +34,14 @@ async function callPrevousPageF<TProps: {}, T: NonFunction>(
 async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T> {
     return new Promise((resolve, reject) => {
         let resolved = false;
-        setTimeout(() => {
-            if (!resolved) {
-                resolved = true;
-                reject()
-            }
-        }, duration)
+        if (duration >= 0) {
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    reject()
+                }
+            }, duration)
+        }
 
         f().then(resolve).catch(reject)
     })
@@ -49,6 +51,7 @@ export async function runConforms<TProps: {}>(
     initPage: Page<TProps>,
     viewEvents: {
         notifyView: NotifyViewEvent,
+        stopEvent: StopEvent,
     },
 ) {
     let result: PrevousPageResult<TProps> = {
@@ -67,7 +70,7 @@ export async function runConforms<TProps: {}>(
         const currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData());
         const {nextPage, steps, timeout} = currentPart;
 
-        const duration = timeout != null ? timeout.duration : 0;
+        const duration = timeout != null ? timeout.duration : -1;
 
         try {
             const res = await withTimeout(async () => {
@@ -114,7 +117,8 @@ export async function runConforms<TProps: {}>(
         }
 
         if (currentPage === pageTypes.Stop) {
-            return;
+            viewEvents.stopEvent()
+            return
         }
     }
 }

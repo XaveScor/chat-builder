@@ -5,7 +5,7 @@ import * as renderer from 'react-test-renderer';
 it('hide question on invalid answer', done => {
     const page = createPage()
 
-    page.use((_, props) => {
+    page.use(() => {
         return {
             steps: [
                 {
