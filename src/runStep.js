@@ -63,19 +63,6 @@ export class ChatMachine {
                 },
             ]
 
-            inputProps = {
-                ...inputProps,
-                onSubmit: handleInputSubmit,
-            }
-
-            this.notifyView({
-                dialog: this.dialog,
-                input: {
-                    component: config.input,
-                    props: inputProps,
-                }
-            })
-
             const handleInputSubmit = (answer: any) => {
                 if (config.validate) {
                     const error = config.validate(answer)
@@ -116,6 +103,19 @@ export class ChatMachine {
 
                 resolve(answer)
             }
+
+            inputProps = {
+                ...inputProps,
+                onSubmit: handleInputSubmit,
+            }
+
+            this.notifyView({
+                dialog: this.dialog,
+                input: {
+                    component: config.input,
+                    props: inputProps,
+                }
+            })
         })
     }
 }

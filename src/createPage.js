@@ -20,7 +20,7 @@ export type PrevousPageResult<TProps> = {
     steps: $ReadOnlyArray<StepResult>,
 };
 
-export type InternalStep<TProps, TAns, TErr, TInput> = 
+export type InternalStep<TProps, TAns, TPropsAns, TErr, TInput> = 
 | {|
     id: any,
     question: Bubble<TProps>,
@@ -35,13 +35,13 @@ export type InternalStep<TProps, TAns, TErr, TInput> =
     questionProps?: TProps,
     isAnswerable: true,
     validate: TAns => (ValidationError | void),
-    answer: AnswerBubble<TAns>,
-    answerProps?: TAns,
+    answer: AnswerBubble<TPropsAns, TAns>,
+    answerProps?: TPropsAns,
     input: Input<TInput>,
     inputProps?: TInput,
 |}
 
-export type Step = InternalStep<*, *, *, *>
+export type Step = InternalStep<*, *, *, *, *>
 
 export type TimeoutConfig<TProps> = {|
     duration: number,
