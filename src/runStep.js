@@ -26,11 +26,9 @@ export class ChatMachine {
     }: Args) {
         const questionProps = {
             ...config.questionProps,
-            key: idx,
         }
         let inputProps = {
             ...config.inputProps,
-            key: idx,
             isAnswerable: config.isAnswerable,
         }
         return new Promise(resolve => {

@@ -6,8 +6,8 @@ import {runConforms} from './runConforms'
 import {createEvent} from './event'
 import type {NotifyViewEvent, State} from './types'
 
-const Dialog = ({views}) => views.map(v => {
-    return <v.component {...v.props} />
+const Dialog = ({views}) => views.map((v, idx) => {
+    return <v.component {...v.props} key={idx} />
 });
 
 type Props<TProps> = {
@@ -47,6 +47,6 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
     
     return <>
         <Dialog views={dialog} />
-        {!stopped && <input.component {...input.props} />}
+        {!stopped && <input.component {...input.props} key={dialog.length} />}
     </>
 }
