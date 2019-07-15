@@ -1,4 +1,4 @@
-import {createPage, questionPhrase, runConforms, Stop} from '..'
+import {createPage, questionBubble, answerBubble, runConforms, Stop} from '..'
 
 it('correct scenario', done => {
     const page = createPage()
@@ -7,9 +7,9 @@ it('correct scenario', done => {
     page.use({
         steps: [
             {
-                ...questionPhrase,
-                question: '',
-                error: ''
+                question: questionBubble,
+                isAnswerable: true,
+                answer: answerBubble,
             }
         ],
         nextPage: Stop,

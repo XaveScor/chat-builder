@@ -1,12 +1,12 @@
 /* @flow */
 
 import type {PageType} from './pageTypes'
-import type {SinglePhrase, TriplePhrase} from './createPhrase';
+import type {Bubble, AnswerBubble} from './createBubble'
 import * as React from 'react';
-import type {EventType} from './event';
-import type {ViewData} from './historyBlock';
+import type {EventType} from './event'
 import type {Input} from './createInput'
 import {type Props, createProps} from './createProps'
+import {ValidationError} from '..'
 
 type TotalPage<TProps> = Page<TProps> | PageType
 
@@ -20,31 +20,28 @@ export type PrevousPageResult<TProps> = {
     steps: $ReadOnlyArray<StepResult>,
 };
 
-type InputConfig<T: {}> = 
+export type InternalStep<TProps, TAns, TErr, TInput> = 
 | {|
-    component: Input<T>,
-    props: T,
+    id: any,
+    question: Bubble<TProps>,
+    questionProps?: TProps,
+    isAnswerable: false,
+    input: Input<TInput>,
+    inputProps?: TInput,
 |}
-| Input<{}>
-
-export type SingleStep<T, Ti> = {|
-    ...$Exact<SinglePhrase<T>>,
-    question: T,
+| {|
     id: any,
-    input: InputConfig<Ti>,
-|};
+    question: Bubble<TProps>,
+    questionProps?: TProps,
+    isAnswerable: true,
+    validate: TAns => (ValidationError | void),
+    answer: AnswerBubble<TAns>,
+    answerProps?: TAns,
+    input: Input<TInput>,
+    inputProps?: TInput,
+|}
 
-export type TripleStep<Tq, Ta, Te, Ti> = {|
-    ...$Exact<TriplePhrase<Tq, Ta, Te>>,
-    question: Tq,
-    error: Te,
-    id: any,
-    input: InputConfig<Ti>,
-|};
-
-export type Step =
-    | SingleStep<*, *>
-    | TripleStep<*, *, *, *>
+export type Step = InternalStep<*, *, *, *>
 
 export type TimeoutConfig<TProps> = {|
     duration: number,

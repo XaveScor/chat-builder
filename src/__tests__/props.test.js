@@ -1,4 +1,4 @@
-import {createPage, questionPhrase, runConforms, createProps, Stop} from '..'
+import {createPage, runConforms, createProps, Stop} from '..'
 
 it('init props', done => {
     const value = {}

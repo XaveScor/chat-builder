@@ -1,59 +1,29 @@
 // @flow
 
-import * as React from 'react';
-import {Page} from './createPage';
-import { runConforms } from './runConforms';
-import {createEvent} from './event';
-import type {ViewData} from './historyBlock';
+import * as React from 'react'
+import {Page} from './createPage'
+import {runConforms} from './runConforms'
+import {createEvent} from './event'
+import type {NotifyViewEvent, State} from './types'
 
-type DialogProps = {
-    views: $ReadOnlyArray<ViewData>,
-    onChange: (number) => void,
-    hideAnswer: boolean,
-    onSelect: string => void,
-}
-const Dialog = ({views, onChange, hideAnswer, onSelect}: DialogProps) => views.map((v, idx) => {
-    const Component = v.getRenderComponent();
-
-    function onClick() {
-        onChange(idx);
-    }
-
-    return <Component key={idx} onAnswerClick={onClick} hideAnswer={idx === views.length - 1 ? hideAnswer : false} onSelectElement={onSelect} />
+const Dialog = ({views}) => views.map(v => {
+    return <v.component {...v.props} />
 });
 
 type Props<TProps> = {
     page: Page<TProps>,
 }
-
-type ParseInputType<T> =
-    | React.ComponentType<T>
-    | {
-        component: React.ComponentType<T>,
-        props: T,
-    }
-// TODO: fix typings
-function parseComponent(obj: ParseInputType<any>): any {
-    if (typeof obj === 'object') {
-        return [obj.component, obj.props]
-    }
-    return [obj, {}]
-}
-
 export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
-    const [views, setViews] = React.useState<$ReadOnlyArray<ViewData>>([]);
-    const [savedViews, setSavedViews] = React.useState<$ReadOnlyArray<ViewData> | null>(null);
-    const [, setKey] = React.useState<number>(0);
-    const [value, setValue] = React.useState<string>('');
+    const [data, setData] = React.useState<State | void>();
     const [stopped, setStopped] = React.useState<boolean>(false)
 
     React.useLayoutEffect(() => {
-        const notifyViewEvent = createEvent<ViewData>();
+        const notifyViewEvent: NotifyViewEvent = createEvent();
         const stopEvent = createEvent<void>()
 
         const unsubscribe = []
         unsubscribe.push(notifyViewEvent.watch(viewData => {
-            setViews(old => old.concat(viewData));
+            setData(viewData);
         }))
         unsubscribe.push(stopEvent.watch(() => {
             setStopped(true)
@@ -68,54 +38,15 @@ export const ConformsForm = <TProps: {}>({page}: Props<TProps>) => {
             unsubscribe.forEach(e => e())
         }
     }, []);
-    
-    function reload() {
-        setKey(key => key + 1);
+
+    if (!data) {
+        return null
     }
 
-    const onChange = React.useCallback((id) => {
-        setViews(old => {
-            setSavedViews(oldSavedViews => {
-                if (oldSavedViews == null) {
-                    return old;
-                }
-
-                return oldSavedViews;
-            })
-            let done = false;
-            const ans = [];
-            for (let i = 0; i < old.length && !done; ++i) {
-                ans.push(old[i]);
-                done = i === id;
-            }
-            return ans;
-        })
-    });
-
-    const onSubmit = React.useCallback(() =>  {
-        setSavedViews(oldSavedViews => {
-            if (oldSavedViews != null) {
-                setViews(oldSavedViews);
-                return null;
-            }
-            return oldSavedViews;
-        })
-    });
-
-    const submit = React.useCallback(() => {
-        views[views.length - 1].setAnswer(value);
-        onSubmit();
-        reload();
-    });
-
-    if (views.length === 0) {
-        return null;
-    }
+    const {dialog, input} = data
     
-    const currentView = views[views.length - 1];
-    const [Input, inputProps] = parseComponent(currentView.Input);
     return <>
-        <Dialog views={views} onChange={onChange} hideAnswer={savedViews != null} onSelect={setValue} />
-        {!stopped && <Input {...inputProps} onChange={setValue} onSubmit={submit} value={value} />}
+        <Dialog views={dialog} />
+        {!stopped && <input.component {...input.props} />}
     </>
 }

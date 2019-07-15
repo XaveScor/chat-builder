@@ -1,6 +1,6 @@
 // @flow
 import * as pageTypes from './pageTypes';
-import {runStep} from './runStep';
+import {ChatMachine} from './runStep';
 import type {NotifyViewEvent, StopEvent} from './types';
 import {
     type StepResult,
@@ -51,7 +51,7 @@ export async function runConforms<TProps: {}>(
     initPage: Page<TProps>,
     viewEvents: {
         notifyView: NotifyViewEvent,
-        stopEvent: StopEvent,
+        stopEvent?: StopEvent,
     },
 ) {
     let result: PrevousPageResult<TProps> = {
@@ -60,6 +60,7 @@ export async function runConforms<TProps: {}>(
     };
 
     let currentPage = initPage;
+    const machine = new ChatMachine(viewEvents.notifyView)
     while (true) {
         const {name, schemeF, props} = currentPage;
         if (schemeF == null) {
@@ -82,9 +83,8 @@ export async function runConforms<TProps: {}>(
 
                 for (let i = 0; i < steps.length; ++i) {
                     const step = steps[i];
-                    const stepResult = await runStep({
+                    const stepResult = await machine.runStep({
                         config: step,
-                        notifyView: viewEvents.notifyView,
                         idx: i,
                         editEvent,
                     });
@@ -117,7 +117,9 @@ export async function runConforms<TProps: {}>(
         }
 
         if (currentPage === pageTypes.Stop) {
-            viewEvents.stopEvent()
+            if (typeof viewEvents.stopEvent === 'function') {
+                viewEvents.stopEvent()
+            }
             return
         }
     }

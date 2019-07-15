@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {createPage, simplePhrase, input, ConformsForm, Stop, questionPhrase} from '..'
+import {createPage, questionBubble, input, ConformsForm, Stop, answerBubble} from '..'
 import * as renderer from 'react-test-renderer'
 
 async function delay(timeout) {
@@ -14,8 +14,10 @@ it('renders correctly', done => {
     startPage.use({
         steps: [
             {
-                ...simplePhrase,
-                question: '',
+                question: questionBubble,
+                questionProps: {
+                    question: '',
+                },
                 input,
             }
         ],
@@ -39,14 +41,14 @@ it('input with props', done => {
     startPage.use({
         steps: [
             {
-                ...questionPhrase,
-                question: '123',
-                error: 'ASD',
-                input: {
-                    component: CustomInput,
-                    props: {
-                        a: 1,
-                    }
+                question: questionBubble,
+                questionProps: {
+                    question: '123',
+                },
+                isAnswerable: true,
+                input: CustomInput,
+                inputProps: {
+                    a: 1,
                 },
             }
         ],

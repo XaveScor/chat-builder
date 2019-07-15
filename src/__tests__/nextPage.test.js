@@ -1,4 +1,4 @@
-import {createPage, simplePhrase, runConforms, Stop} from '..'
+import {createPage, questionBubble, runConforms, Stop} from '..'
 
 it('correct constant scenario', done => {
     const startPage = createPage()
@@ -7,8 +7,10 @@ it('correct constant scenario', done => {
     startPage.use({
         steps: [
             {
-                ...simplePhrase,
-                question: '',
+                question: questionBubble,
+                questionProps: {
+                    question: '',
+                }
             }
         ],
         nextPage: finalPage,
@@ -34,8 +36,10 @@ it('correct function scenario', done => {
     startPage.use({
         steps: [
             {
-                ...simplePhrase,
-                question: '',
+                question: questionBubble,
+                questionProps: {
+                    question: ''
+                },
             }
         ],
         nextPage: () => finalPage,

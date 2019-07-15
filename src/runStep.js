@@ -1,48 +1,121 @@
 // @flow
 import type {NotifyViewEvent} from './types';
 import type {Step, TimeoutConfig} from './createPage';
-import {createSingleHistoryBlock, createTripleHistoryBlock} from './historyBlock';
 import type {EditEvent} from './runConforms';
+import type {Bubble, AnswerBubble} from './createBubble'
+import {ValidationError} from './ValidationError'
 
 type Args = {|
     config: Step,
-    notifyView: NotifyViewEvent,
     idx: number,
     editEvent: EditEvent,
 |}
 
-export async function runStep({
-    config,
-    notifyView,
-    idx,
-    editEvent,
-}: Args) {
-    if (config.type === 'single') {
-        const historyBlock = createSingleHistoryBlock({
-            config,
-        });
-        // $FlowFixMe
-        notifyView(historyBlock.view);
-        return '';
+export class ChatMachine {
+    dialog: Array<{component: any, props: any}> = []
+    notifyView: NotifyViewEvent
+
+    constructor(notifyView: NotifyViewEvent) {
+        this.notifyView = notifyView
     }
 
-    const historyBlock = createTripleHistoryBlock({
+    async runStep({
         config,
-    });
-    notifyView(historyBlock.view);
-    
-    let oldAnswer;
-    historyBlock.subscribeAnswer(answer => {
-        if (oldAnswer != null) {
-            editEvent({
-                id: idx,
-                result: answer,
-            });
+        idx,
+        editEvent,
+    }: Args) {
+        const questionProps = {
+            ...config.questionProps,
+            key: idx,
         }
-        oldAnswer = answer;
-    })
+        let inputProps = {
+            ...config.inputProps,
+            key: idx,
+            isAnswerable: config.isAnswerable,
+        }
+        return new Promise(resolve => {
+            if (!config.isAnswerable) {
+                this.dialog = [
+                    ...this.dialog,
+                    {
+                        component: config.question,
+                        props: questionProps,
+                    },
+                ]
+        
+                this.notifyView({
+                    dialog: this.dialog,
+                    input: {
+                        component: config.input,
+                        props: inputProps,
+                    }
+                })
 
-    return new Promise(resolve => {
-        historyBlock.subscribeAnswer(resolve);
-    });
+                resolve()
+                return
+            }
+
+            this.dialog = [
+                ...this.dialog,
+                {
+                    component: config.question,
+                    props: questionProps,
+                },
+            ]
+
+            inputProps = {
+                ...inputProps,
+                onSubmit: handleInputSubmit,
+            }
+
+            this.notifyView({
+                dialog: this.dialog,
+                input: {
+                    component: config.input,
+                    props: inputProps,
+                }
+            })
+
+            function handleInputSubmit(answer: any) {
+                if (config.validate) {
+                    const error = config.validate(answer)
+                    if (error instanceof ValidationError) {
+                        this.notifyView({
+                            dialog: this.dialog,
+                            input: {
+                                component: config.input,
+                                props: {
+                                    ...inputProps,
+                                    error: error.message,
+                                }
+                            }
+                        })
+                        return
+                    }
+                }
+
+                this.dialog = [
+                    ...this.dialog,
+                    {
+                        component: config.answer,
+                        props: {
+                            ...config.answerProps,
+                            answer,
+                            handleEditAnswer: null,
+                        },
+                    }
+                ]
+
+                this.notifyView({
+                    dialog: this.dialog,
+                    input: {
+                        component: config.input,
+                        props: inputProps,
+                    }
+                })
+
+                resolve(answer)
+            }
+        })
+    }
 }

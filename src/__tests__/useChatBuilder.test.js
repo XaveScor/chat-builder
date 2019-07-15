@@ -1,4 +1,4 @@
-import {createPage, questionPhrase, simplePhrase, input, runConforms, createProps, Stop, useChatBuilder} from '..'
+import {createPage, questionBubble, input, runConforms, createProps, Stop, useChatBuilder} from '..'
 import * as React from 'react';
 import * as renderer from 'react-test-renderer';
 
@@ -13,9 +13,11 @@ it('init props', done => {
         return {
             steps: [
                 {
-                    ...simplePhrase,
+                    question: questionBubble,
+                    questionProps: {
+                        question: props.a,
+                    },
                     input,
-                    question: props.a
                 }
             ],
             nextPage: Stop,

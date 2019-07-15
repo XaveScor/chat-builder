@@ -1,12 +1,12 @@
 // @flow
 
-export {createSinglePhrase, createTriplePhrase} from './createPhrase'
+export {createBubble, createAnswerBubble} from './createBubble'
 export {createPage} from './createPage'
 export {runConforms} from './runConforms'
-export {questionPhrase, simplePhrase, input} from './controls'
+export {questionBubble, answerBubble, input} from './controls'
 export {ConformsForm} from './ReactForm'
 export {Start, Stop} from './pageTypes'
-export {ParseError} from './ParseError'
+export {ValidationError} from './ValidationError'
 export {createInput} from './createInput'
 export {createProps} from './createProps'
 export {useChatBuilder} from './useChatBuilder'

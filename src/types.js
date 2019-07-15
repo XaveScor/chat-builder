@@ -1,8 +1,16 @@
 // @flow
-import type {EventType} from './event';
-import type {ViewData} from './historyBlock';
+import type {EventType} from './event'
+import * as React from 'react'
 
-export type ValidateF = (string) => boolean;
-
-export type NotifyViewEvent = EventType<ViewData>;
+export type State = {
+    dialog: Array<{
+        component: React.ComponentType<any>,
+        props: any,
+    }>,
+    input: {
+        component: React.ComponentType<any>,
+        props: any,
+    },
+}
+export type NotifyViewEvent = EventType<State>;
 export type StopEvent = EventType<void>
