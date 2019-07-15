@@ -76,7 +76,7 @@ export class ChatMachine {
                 }
             })
 
-            function handleInputSubmit(answer: any) {
+            const handleInputSubmit = (answer: any) => {
                 if (config.validate) {
                     const error = config.validate(answer)
                     if (error instanceof ValidationError) {
