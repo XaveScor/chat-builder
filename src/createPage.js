@@ -6,7 +6,7 @@ import * as React from 'react';
 import type {EventType} from './event'
 import type {Input} from './createInput'
 import {type Props, createProps} from './createProps'
-import {ValidationError} from '.'
+import {ValidationError} from './ValidationError'
 
 type TotalPage<TProps> = Page<TProps> | PageType
 
