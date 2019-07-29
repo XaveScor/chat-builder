@@ -54,8 +54,9 @@ export type NonFunction =
     | number
     | boolean
 
+type MapPrevousPageF<TProps, T: NonFunction> = ((PrevousPageResult<TProps>, TProps) => Promise<T> | T) 
 export type MapPrevousPage<TProps, T: NonFunction> = 
-    | ((PrevousPageResult<TProps>, TProps) => Promise<T> | T)
+    | MapPrevousPageF<TProps, T>
     | T
 
 type NextPage<TProps> = MapPrevousPage<TProps, TotalPage<TProps>>
@@ -66,6 +67,7 @@ export type Config<TProps> = {|
     timeout?: TimeoutConfig<TProps>,
 |};
 
+type SchemeFunction<TProps> = MapPrevousPageF<TProps, Config<TProps>>
 export type SchemeF<TProps> = MapPrevousPage<TProps, Config<TProps>>
 
 export class Page<TProps: {}> {
@@ -82,17 +84,22 @@ export class Page<TProps: {}> {
     }
 }
 
-type CreatePageArg<TProps> = string | {|
+type CreatePageArg<TProps> = string | SchemeFunction<TProps> | {|
     name?: string,
     props?: Props<TProps>,
 |}
 declare export function createPage(a?: string | {| name?: string |}): Page<{}>
-declare export function createPage<TProps>({| name?: string, props: Props<TProps> |}): Page<TProps>
+declare export function createPage<TProps>({| name?: string, props: Props<TProps> |} | SchemeFunction<TProps>): Page<TProps>
 export function createPage<TProps: {}>(
     arg?: CreatePageArg<TProps>
 ): Page<TProps | {}> {
     if (typeof arg === 'string' || arg == null) {
         return new Page(arg, createProps())
+    }
+    if (typeof arg === 'function') {
+        const page = new Page(null, createProps())
+        page.use(arg)
+        return page
     }
     const {name, props} = arg
     return new Page<any>(name, props || createProps())
