@@ -30,9 +30,10 @@ it('init props', done => {
         return <Chat a='correct props sharing' />
     }
 
-    const tree = renderer
-        .create(<Component />)
-
+    let tree
+    renderer.act(() => {
+        tree = renderer.create(<Component />)
+    })
 
     setTimeout(() => {
         const res = tree.toJSON()

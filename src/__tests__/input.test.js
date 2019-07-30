@@ -7,7 +7,7 @@ async function delay(timeout) {
       setTimeout(resolve, timeout);
     });
   }
-// Wait react-test-renderer 18.9.0 stable
+
 it('renders correctly', done => {
     const startPage = createPage()
 
@@ -23,8 +23,10 @@ it('renders correctly', done => {
         ],
         nextPage: Stop,
     })
-    const tree = renderer
-        .create(<ConformsForm page={startPage} />)
+    let tree
+    renderer.act(() => {
+        tree = renderer.create(<ConformsForm page={startPage} />)
+    })
         
     setTimeout(() => {
         const res = tree.toJSON()
@@ -54,9 +56,11 @@ it('input with props', done => {
         ],
         nextPage: Stop,
     })
-    const tree = renderer
-        .create(<ConformsForm page={startPage} />)
-        
+    let tree
+    renderer.act(() => {
+        tree = renderer.create(<ConformsForm page={startPage} />)
+    })
+
     setTimeout(() => {
         const res = tree.toJSON()
         expect(res).toMatchSnapshot()
