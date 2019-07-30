@@ -1,7 +1,7 @@
 // @flow
 import * as pageTypes from './pageTypes';
 import {ChatMachine} from './runStep';
-import type {NotifyViewEvent, StopEvent} from './types';
+import type {NotifyViewEvent, StopEvent, PendingConfig} from './types';
 import {
     type StepResult,
     type PrevousPageResult,
@@ -52,6 +52,7 @@ export async function runConforms<TProps: {}>(
     setup: {
         notifyView: NotifyViewEvent,
         stopEvent?: StopEvent,
+        pending?: PendingConfig,
     },
 ) {
     let result: PrevousPageResult<TProps> = {
@@ -60,7 +61,7 @@ export async function runConforms<TProps: {}>(
     };
 
     let currentPage = initPage;
-    const machine = new ChatMachine(setup.notifyView)
+    const machine = new ChatMachine(setup.notifyView, setup.pending)
     while (true) {
         const {name, schemeF, props} = currentPage;
         if (schemeF == null) {
@@ -68,6 +69,7 @@ export async function runConforms<TProps: {}>(
             break;
         }
         // TODO: fix flow type inference
+        await machine.showPending()
         const currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData());
         const {nextPage, steps, timeout} = currentPart;
 

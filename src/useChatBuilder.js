@@ -3,9 +3,13 @@ import {Page} from './createPage'
 import * as React from 'react'
 import {ConformsForm} from './ReactForm'
 import {areEqualShallow} from './shallowEqual'
+import type {PendingConfig} from './types'
 
 function createComponent<TProps: {}>(
     page: Page<TProps>,
+    params?: {
+        pending?: PendingConfig,
+    },
 ): React.ComponentType<TProps> {
     let oldProps = page.props.getData()
     return (props: TProps) => {
@@ -13,7 +17,10 @@ function createComponent<TProps: {}>(
             page.props.replace(props)
             oldProps = props
         }
-        return <ConformsForm page={page} />
+        return <ConformsForm
+            page={page}
+            pending={params?.pending}
+        />
     }
 }
 

@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+Array [
+  "pending",
+  <input
+    onChange={[Function]}
+  />,
+  <input
+    type="submit"
+  />,
+]
+`;
+
+exports[`renders correctly 2`] = `
+<p
+  className="robot"
+>
+  question
+</p>
+`;

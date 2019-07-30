@@ -1,5 +1,5 @@
 // @flow
-import type {NotifyViewEvent} from './types';
+import type {NotifyViewEvent, DialogElement, PendingConfig} from './types';
 import type {Step, TimeoutConfig} from './createPage';
 import type {EditEvent} from './runConforms';
 import type {Bubble, AnswerBubble} from './createBubble'
@@ -12,11 +12,39 @@ type Args = {|
 |}
 
 export class ChatMachine {
-    dialog: Array<{component: any, props: any}> = []
+    dialog: Array<DialogElement> = []
     notifyView: NotifyViewEvent
+    pendingTimeout: ?TimeoutID = null
+    pending: ?PendingConfig
 
-    constructor(notifyView: NotifyViewEvent) {
+    constructor(notifyView: NotifyViewEvent, pending?: PendingConfig) {
         this.notifyView = notifyView
+        this.pending = pending
+    }
+
+    async showPending() {
+        const pending = this.pending
+        if (this.pendingTimeout == null && pending != null) {
+            this.pendingTimeout = setTimeout(() => {
+                this.dialog = [
+                    ...this.dialog,
+                    {
+                        component: pending.pending,
+                        props: pending.pendingProps,
+                    }
+                ]
+                this.notifyView({
+                    dialog: this.dialog,
+                    input: {
+                        component: pending.input,
+                        props: {
+                            ...pending.inputProps,
+                            isAnswerable: false,
+                        },
+                    },
+                })
+            }, pending.pendingTimeout == null ? 500 : pending.pendingTimeout)
+        }
     }
 
     async runStep({
@@ -30,6 +58,13 @@ export class ChatMachine {
         let inputProps = {
             ...config.inputProps,
             isAnswerable: config.isAnswerable,
+        }
+        const pending = this.pending
+        if (this.pendingTimeout != null && pending != null) {
+            clearTimeout(this.pendingTimeout)
+            this.pendingTimeout = null
+            // clear last `pending` element
+            this.dialog = this.dialog.filter(el => el.component !== pending.pending)
         }
         return new Promise(resolve => {
             if (!config.isAnswerable) {
