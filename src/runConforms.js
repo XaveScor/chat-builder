@@ -49,7 +49,7 @@ async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T>
 
 export async function runConforms<TProps: {}>(
     initPage: Page<TProps>,
-    viewEvents: {
+    setup: {
         notifyView: NotifyViewEvent,
         stopEvent?: StopEvent,
     },
@@ -60,7 +60,7 @@ export async function runConforms<TProps: {}>(
     };
 
     let currentPage = initPage;
-    const machine = new ChatMachine(viewEvents.notifyView)
+    const machine = new ChatMachine(setup.notifyView)
     while (true) {
         const {name, schemeF, props} = currentPage;
         if (schemeF == null) {
@@ -117,8 +117,8 @@ export async function runConforms<TProps: {}>(
         }
 
         if (currentPage === pageTypes.Stop) {
-            if (typeof viewEvents.stopEvent === 'function') {
-                viewEvents.stopEvent()
+            if (typeof setup.stopEvent === 'function') {
+                setup.stopEvent()
             }
             return
         }
