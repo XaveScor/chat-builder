@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`ConformsForm 1`] = `
 Array [
   "pending",
   <input
@@ -12,7 +12,27 @@ Array [
 ]
 `;
 
-exports[`renders correctly 2`] = `
+exports[`ConformsForm 2`] = `
+<p
+  className="robot"
+>
+  question
+</p>
+`;
+
+exports[`useChatBuilder 1`] = `
+Array [
+  "pending",
+  <input
+    onChange={[Function]}
+  />,
+  <input
+    type="submit"
+  />,
+]
+`;
+
+exports[`useChatBuilder 2`] = `
 <p
   className="robot"
 >

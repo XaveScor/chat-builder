@@ -17,7 +17,6 @@ const Dialog = ({views, pending: Pending}: DialogProps) => views.map((v, idx) =>
 type Props<TProps> = {
     page: Page<TProps>,
     pending?: PendingConfig,
-    pendingTimeout?: number,
 }
 export const ConformsForm = <TProps: {}>(props: Props<TProps>) => {
     const {page, pending} = props

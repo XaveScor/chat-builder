@@ -24,16 +24,15 @@ function createComponent<TProps: {}>(
     }
 }
 
-declare export function useChatBuilder<TProps: {}>(
-    page: Page<TProps>,
-): React.ComponentType<TProps>
-
 export function useChatBuilder<TProps: {}>(
-    page: Page<TProps>
+    page: Page<TProps>,
+    params?: {
+        pending?: PendingConfig,
+    },
 ): React.ComponentType<TProps> {
     const componentRef = React.useRef<React.ComponentType<TProps> | null>(null)
     if (!componentRef.current) {
-        componentRef.current = createComponent(page)
+        componentRef.current = createComponent(page, params)
     }
 
     return componentRef.current
