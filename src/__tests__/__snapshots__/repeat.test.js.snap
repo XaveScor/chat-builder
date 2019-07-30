@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`repeat 1`] = `
+Array [
+  <p
+    className="robot"
+  >
+    question
+  </p>,
+  <p
+    className="robot"
+  >
+    question
+  </p>,
+]
+`;

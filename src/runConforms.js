@@ -62,15 +62,22 @@ export async function runConforms<TProps: {}>(
 
     let currentPage = initPage;
     const machine = new ChatMachine(setup.notifyView, setup.pending)
+    let lastConfig: Config<TProps> | null = null
     while (true) {
         const {name, schemeF, props} = currentPage;
         if (schemeF == null) {
-            console.error(`You should declare schemeF in ${name || 'createPage'}.use method`);
-            break;
+            throw new Error(`You should declare schemeF in ${name || 'createPage'}.use method`);
         }
         // TODO: fix flow type inference
         await machine.showPending()
-        const currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData());
+        let currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData());
+        if (currentPart.nextPage === pageTypes.Repeat) {
+            if (lastConfig == null) {
+                throw new Error(`You cannot use Repeat at init page`);
+            }
+            currentPart = lastConfig;
+        }
+        lastConfig = currentPart
         const {nextPage, steps, timeout} = currentPart;
 
         const duration = timeout != null ? timeout.duration : -1;
@@ -105,7 +112,7 @@ export async function runConforms<TProps: {}>(
                 prevousPage: currentPage,
                 steps: res,
             }
-            currentPage = await callPrevousPageF(nextPage, result, props)
+            currentPage = await callPrevousPageF(nextPage, result, props.getData())
         } catch (_) {
             result = {
                 prevousPage: currentPage,
@@ -114,7 +121,7 @@ export async function runConforms<TProps: {}>(
             if (timeout) {
                 currentPage = timeout.page
             } else {
-                currentPage = await callPrevousPageF(nextPage, result, props)
+                currentPage = await callPrevousPageF(nextPage, result, props.getData())
             }
         }
 
