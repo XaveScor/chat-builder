@@ -12,5 +12,10 @@ Array [
   >
     question
   </p>,
+  <p
+    className="robot"
+  >
+    question
+  </p>,
 ]
 `;
