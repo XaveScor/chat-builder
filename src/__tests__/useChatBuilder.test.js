@@ -9,13 +9,13 @@ it('init props', done => {
         props: shared,
     })
 
-    page.use((_, props) => {
+    page.use((_, getProps) => {
         return {
             steps: [
                 {
                     question: questionBubble,
                     questionProps: {
-                        question: props.a,
+                        question: getProps().a,
                     },
                     input,
                 }

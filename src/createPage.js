@@ -54,7 +54,7 @@ export type NonFunction =
     | number
     | boolean
 
-type MapPrevousPageF<TProps, T: NonFunction> = ((PrevousPageResult<TProps>, TProps) => Promise<T> | T) 
+type MapPrevousPageF<TProps, T: NonFunction> = ((PrevousPageResult<TProps>, void => TProps) => Promise<T> | T) 
 export type MapPrevousPage<TProps, T: NonFunction> = 
     | MapPrevousPageF<TProps, T>
     | T

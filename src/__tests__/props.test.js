@@ -7,8 +7,8 @@ it('init props', done => {
         props: shared,
     })
 
-    page.use((_, props) => {
-        expect(props).toBe(value)
+    page.use((_, getProps) => {
+        expect(getProps()).toBe(value)
         done()
         return {
             steps: [],
@@ -32,8 +32,8 @@ it('change props during computation', done => {
         props: shared,
     })
 
-    page1.use((_, props) => {
-        expect(props).toBe(oldProps)
+    page1.use((_, getProps) => {
+        expect(getProps()).toBe(oldProps)
         shared.replace(newProps)
         return {
             steps: [],
@@ -41,8 +41,8 @@ it('change props during computation', done => {
         }
     })
 
-    page2.use((_, props) => {
-        expect(props).toBe(newProps)
+    page2.use((_, getProps) => {
+        expect(getProps()).toBe(newProps)
         done()
         return {
             steps: [],

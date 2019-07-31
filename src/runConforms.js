@@ -22,10 +22,10 @@ export type EditEvent = EventType<{
 async function callPrevousPageF<TProps: {}, T: NonFunction>(
     map: MapPrevousPage<TProps, T>,
     result: PrevousPageResult<TProps>,
-    props: TProps,
+    getProps: void => TProps,
 ): Promise<T> {
     if (typeof map === 'function') {
-        return Promise.resolve(map(result, props))
+        return Promise.resolve(map(result, getProps))
     }
 
     return map
@@ -70,7 +70,7 @@ export async function runConforms<TProps: {}>(
         }
         // TODO: fix flow type inference
         await machine.showPending()
-        let currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData());
+        let currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData);
         if (currentPart.nextPage === pageTypes.Repeat) {
             if (lastConfig == null) {
                 throw new Error(`You cannot use Repeat at init page`);
@@ -112,7 +112,7 @@ export async function runConforms<TProps: {}>(
                 prevousPage: currentPage,
                 steps: res,
             }
-            currentPage = await callPrevousPageF(nextPage, result, props.getData())
+            currentPage = await callPrevousPageF(nextPage, result, props.getData)
         } catch (_) {
             result = {
                 prevousPage: currentPage,
@@ -121,7 +121,7 @@ export async function runConforms<TProps: {}>(
             if (timeout) {
                 currentPage = timeout.page
             } else {
-                currentPage = await callPrevousPageF(nextPage, result, props.getData())
+                currentPage = await callPrevousPageF(nextPage, result, props.getData)
             }
         }
 
