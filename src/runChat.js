@@ -13,6 +13,7 @@ import {
 import {createEvent, type EventType} from './event';
 import * as React from 'react';
 import type {Props} from './createProps'
+import {runWithTimeout} from './runWithTimeout'
 
 export type EditEvent = EventType<{
     id: number,
@@ -29,22 +30,6 @@ async function callPrevousPageF<TProps: {}, T: NonFunction>(
     }
 
     return map
-}
-
-async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T> {
-    return new Promise((resolve, reject) => {
-        let resolved = false;
-        if (duration >= 0) {
-            setTimeout(() => {
-                if (!resolved) {
-                    resolved = true;
-                    reject()
-                }
-            }, duration)
-        }
-
-        f().then(resolve).catch(reject)
-    })
 }
 
 export async function runChat<TProps: {}>(
@@ -83,7 +68,7 @@ export async function runChat<TProps: {}>(
         const duration = timeout != null ? timeout.duration : -1;
 
         try {
-            const res = await withTimeout(async () => {
+            const res = await runWithTimeout(async () => {
                 const results: Array<StepResult> = [];
                 const editEvent: EditEvent = createEvent();
                 const unsubscribe = editEvent.watch(res => {
