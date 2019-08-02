@@ -10,7 +10,7 @@ export function createEvent<T>(): EventType<T> {
     const watchers: Array<Watcher<T>> = [];
 
     function Event(arg: T) {
-        setTimeout(() => watchers.forEach(f => f(arg)), 0);
+        watchers.forEach(f => f(arg))
     }
     Event.watch = (subscriber: Watcher<T>) => {
         watchers.push(subscriber);

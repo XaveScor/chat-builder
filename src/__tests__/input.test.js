@@ -1,15 +1,13 @@
+/* @flow */
 import * as React from 'react';
-import {createPage, questionBubble, input, Stop, answerBubble, runChat} from '..'
+import {createPage, questionBubble, input, Stop, answerBubble, createInput} from '..'
+import {createChatMock} from './common'
 import {Chat} from '../ReactChat'
+import {delay} from '../common'
+import {createEvent} from '../event'
 import * as renderer from 'react-test-renderer'
 
-async function delay(timeout) {
-    return new Promise(resolve => {
-      setTimeout(resolve, timeout);
-    });
-  }
-
-it('renders correctly', done => {
+it('renders correctly', async () => {
     const startPage = createPage()
 
     startPage.use({
@@ -24,22 +22,28 @@ it('renders correctly', done => {
         ],
         nextPage: Stop,
     })
-    let tree
+
+    const start = createEvent<void>()
+    function rerender(count) {}
+    const chatMock = createChatMock(rerender, start)
+    const tree = renderer.create(<Chat runChat={chatMock} page={startPage} />)
+
     renderer.act(() => {
-        tree = renderer.create(<Chat runChat={runChat} page={startPage} />)
+        start()
     })
-        
-    setTimeout(() => {
-        const res = tree.toJSON()
-        expect(res).toMatchSnapshot()
-        done()
-    }, 1000)
+
+    await delay(1000)
+
+    const res = tree.toJSON()
+    expect(res).toMatchSnapshot()
 });
 
-it('input with props', done => {
+it('input with props', async () => {
     const startPage = createPage()
 
-    const CustomInput = ({a}) => `custom Input with a, value: ${a}`
+    const CustomInput = createInput<{a: number}>({
+        component: ({a}) => `custom Input with a, value: ${a}`,
+    })
 
     startPage.use({
         steps: [
@@ -57,14 +61,18 @@ it('input with props', done => {
         ],
         nextPage: Stop,
     })
-    let tree
+
+    const start = createEvent<void>()
+    function rerender(count) {}
+    const chatMock = createChatMock(rerender, start)
+    const tree = renderer.create(<Chat runChat={chatMock} page={startPage} />)
+
     renderer.act(() => {
-        tree = renderer.create(<Chat runChat={runChat} page={startPage} />)
+        start()
     })
 
-    setTimeout(() => {
-        const res = tree.toJSON()
-        expect(res).toMatchSnapshot()
-        done()
-    }, 1000)
+    await delay(1000)
+
+    const res = tree.toJSON()
+    expect(res).toMatchSnapshot()
 });

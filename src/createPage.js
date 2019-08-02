@@ -21,16 +21,16 @@ export type PrevousPageResult<TProps> = {
 };
 
 type InternalNonAnswerableStep<TProps, TInput> = {|
-    id: any,
+    id?: any,
     question: Bubble<TProps>,
     questionProps?: TProps,
-    isAnswerable: false,
+    isAnswerable?: false,
     input: Input<TInput>,
     inputProps?: TInput,
 |}
 
 type InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput> = {|
-    id: any,
+    id?: any,
     question: Bubble<TProps>,
     questionProps?: TProps,
     isAnswerable: true,
