@@ -1,3 +1,4 @@
+/* @flow */
 import {createPage, input, Stop, runChat} from '..'
 
 it('createPage arg: function', done => {
@@ -15,7 +16,9 @@ it('createPage arg: function', done => {
         }
     });
 
-    runChat(startPage, {})
+    runChat(startPage, {
+        notifyView: () => {},
+    })
 });
 
 it('createPage arg: async function', done => {
@@ -33,5 +36,7 @@ it('createPage arg: async function', done => {
         }
     });
 
-    runChat(startPage, {})
+    runChat(startPage, {
+        notifyView: () => {},
+    })
 });
