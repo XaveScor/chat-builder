@@ -20,8 +20,7 @@ export type PrevousPageResult<TProps> = {
     steps: $ReadOnlyArray<StepResult>,
 };
 
-export type InternalStep<TProps, TAns, TPropsAns, TErr, TInput> = 
-| {|
+type InternalNonAnswerableStep<TProps, TInput> = {|
     id: any,
     question: Bubble<TProps>,
     questionProps?: TProps,
@@ -29,7 +28,8 @@ export type InternalStep<TProps, TAns, TPropsAns, TErr, TInput> =
     input: Input<TInput>,
     inputProps?: TInput,
 |}
-| {|
+
+type InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput> = {|
     id: any,
     question: Bubble<TProps>,
     questionProps?: TProps,
@@ -41,7 +41,13 @@ export type InternalStep<TProps, TAns, TPropsAns, TErr, TInput> =
     inputProps?: TInput,
 |}
 
+export type InternalStep<TProps, TAns, TPropsAns, TErr, TInput> = 
+| InternalNonAnswerableStep<TProps, TInput>
+| InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput>
+
 export type Step = InternalStep<*, *, *, *, *>
+export type NonAnswerableStep = InternalNonAnswerableStep<*, *>
+export type AnswerableStep = InternalAnswerableStep<*, *, *, *, *>
 
 export type TimeoutConfig<TProps> = {|
     duration: number,

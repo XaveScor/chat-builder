@@ -1,7 +1,7 @@
 /* @flow */
 
 import {runWithTimeout, TimeoutError} from '../runWithTimeout'
-import {delay} from './common';
+import {delay} from '../common';
 
 it('without timeout', async () => {
     const callback = jest.fn<$ReadOnlyArray<AbortSignal>, Promise<number>>()

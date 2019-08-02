@@ -1,6 +1,6 @@
 // @flow
 import * as pageTypes from './pageTypes';
-import {ChatMachine} from './runStep';
+import {ChatMachine} from './ChatMachine';
 import type {NotifyViewEvent, StopEvent, PendingConfig} from './types';
 import {
     type StepResult,
@@ -68,7 +68,7 @@ export async function runChat<TProps: {}>(
         const duration = timeout != null ? timeout.duration : -1;
 
         try {
-            const res = await runWithTimeout(async () => {
+            const res = await runWithTimeout(async (abortController) => {
                 const results: Array<StepResult> = [];
                 const editEvent: EditEvent = createEvent();
                 const unsubscribe = editEvent.watch(res => {
