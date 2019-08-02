@@ -2,7 +2,7 @@
 
 export {createBubble, createAnswerBubble} from './createBubble'
 export {createPage} from './createPage'
-export {runConforms} from './runConforms'
+export {runChat} from './runChat'
 export {questionBubble, answerBubble, input} from './controls'
 export {ConformsForm} from './ReactForm'
 export {Start, Stop, Repeat} from './pageTypes'

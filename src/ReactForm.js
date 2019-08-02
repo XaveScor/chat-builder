@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import {Page} from './createPage'
-import {runConforms} from './runConforms'
+import {runChat} from './runChat'
 import {createEvent} from './event'
 import type {NotifyViewEvent, State, PendingConfig} from './types'
 
@@ -35,7 +35,7 @@ export const ConformsForm = <TProps: {}>(props: Props<TProps>) => {
             setStopped(true)
         }))
 
-        runConforms(page, {
+        runChat(page, {
             notifyView: notifyViewEvent,
             stopEvent,
             pending,

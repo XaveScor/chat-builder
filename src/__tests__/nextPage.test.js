@@ -1,4 +1,4 @@
-import {createPage, questionBubble, runConforms, Stop} from '..'
+import {createPage, questionBubble, runChat, Stop} from '..'
 
 it('correct constant scenario', done => {
     const startPage = createPage()

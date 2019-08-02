@@ -1,4 +1,4 @@
-import {createPage, input, Stop, runConforms} from '..'
+import {createPage, input, Stop, runChat} from '..'
 
 it('createPage arg: function', done => {
     const startPage = createPage(() => {

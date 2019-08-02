@@ -1,7 +1,7 @@
 // @flow
 import type {NotifyViewEvent, DialogElement, PendingConfig} from './types';
 import type {Step, TimeoutConfig} from './createPage';
-import type {EditEvent} from './runConforms';
+import type {EditEvent} from './runChat';
 import type {Bubble, AnswerBubble} from './createBubble'
 import {ValidationError} from './ValidationError'
 

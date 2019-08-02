@@ -1,4 +1,4 @@
-import {createPage, questionBubble, input, runConforms, createProps, Stop, useChatBuilder} from '..'
+import {createPage, questionBubble, input, runChat, createProps, Stop, useChatBuilder} from '..'
 import * as React from 'react';
 import * as renderer from 'react-test-renderer';
 

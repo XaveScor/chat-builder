@@ -47,7 +47,7 @@ async function withTimeout<T>(f: () => Promise<T>, duration: number): Promise<T>
     })
 }
 
-export async function runConforms<TProps: {}>(
+export async function runChat<TProps: {}>(
     initPage: Page<TProps>,
     setup: {
         notifyView: NotifyViewEvent,

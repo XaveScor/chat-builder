@@ -1,4 +1,4 @@
-import {createPage, questionBubble, answerBubble, runConforms, Stop} from '..'
+import {createPage, questionBubble, answerBubble, runChat, Stop} from '..'
 
 it('correct scenario', done => {
     const page = createPage()
