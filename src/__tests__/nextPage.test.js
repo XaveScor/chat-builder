@@ -24,7 +24,7 @@ it('correct constant scenario', done => {
         }
     })
 
-    runConforms(startPage, {
+    runChat(startPage, {
         notifyView: () => {},
     })
 })
@@ -53,7 +53,7 @@ it('correct function scenario', done => {
         }
     })
 
-    runConforms(startPage, {
+    runChat(startPage, {
         notifyView: () => {},
     })
 })

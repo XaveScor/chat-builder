@@ -15,7 +15,7 @@ it('createPage arg: function', done => {
         }
     });
 
-    runConforms(startPage, {})
+    runChat(startPage, {})
 });
 
 it('createPage arg: async function', done => {
@@ -33,5 +33,5 @@ it('createPage arg: async function', done => {
         }
     });
 
-    runConforms(startPage, {})
+    runChat(startPage, {})
 });

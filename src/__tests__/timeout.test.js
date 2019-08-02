@@ -27,7 +27,7 @@ it('correct scenario', done => {
         }
     })
 
-    runConforms(page, {
+    runChat(page, {
         notifyView: () => {},
     })
 })

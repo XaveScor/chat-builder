@@ -16,7 +16,7 @@ it('init props', done => {
         }
     })
 
-    runConforms(page, {
+    runChat(page, {
         notifyView: () => {},
     })
 })
@@ -50,7 +50,7 @@ it('change props during computation', done => {
         }
     })
 
-    runConforms(page1, {
+    runChat(page1, {
         notifyView: () => {},
     })
 })
