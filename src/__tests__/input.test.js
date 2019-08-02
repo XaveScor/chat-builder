@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {createPage, questionBubble, input, ConformsForm, Stop, answerBubble} from '..'
+import {createPage, questionBubble, input, Stop, answerBubble, runChat} from '..'
+import {Chat} from '../ReactChat'
 import * as renderer from 'react-test-renderer'
 
 async function delay(timeout) {
@@ -25,7 +26,7 @@ it('renders correctly', done => {
     })
     let tree
     renderer.act(() => {
-        tree = renderer.create(<ConformsForm page={startPage} />)
+        tree = renderer.create(<Chat runChat={runChat} page={startPage} />)
     })
         
     setTimeout(() => {
@@ -58,7 +59,7 @@ it('input with props', done => {
     })
     let tree
     renderer.act(() => {
-        tree = renderer.create(<ConformsForm page={startPage} />)
+        tree = renderer.create(<Chat runChat={runChat} page={startPage} />)
     })
 
     setTimeout(() => {

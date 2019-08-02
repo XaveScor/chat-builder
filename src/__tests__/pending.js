@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {createPage, ConformsForm, createPending, input, Stop, questionBubble, useChatBuilder} from '..'
+import {createPage, createPending, input, Stop, questionBubble, useChatBuilder, runChat} from '..'
+import {Chat} from '../ReactChat'
 import * as renderer from 'react-test-renderer'
 
 async function delay(timeout) {
@@ -36,7 +37,7 @@ it('ConformsForm', done => {
     let tree
     renderer.act(() => {
         tree = renderer
-            .create(<ConformsForm page={startPage} pending={pendingConfig} />)
+            .create(<Chat runChat={runChat} page={startPage} pending={pendingConfig} />)
     })
     
     setTimeout(() => {
@@ -72,7 +73,7 @@ it('useChatBuilder', done => {
             pending: pendingConfig,
         })
 
-        return <Chat {...props} />
+        return <Chat runChat={runChat} {...props} />
     }
 
     let tree

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import {Page} from './createPage'
-import {runChat} from './runChat'
+import type {RunChat} from './runChat'
 import {createEvent} from './event'
 import type {NotifyViewEvent, State, PendingConfig} from './types'
 
@@ -15,11 +15,12 @@ const Dialog = ({views, pending: Pending}: DialogProps) => views.map((v, idx) =>
 });
 
 type Props<TProps> = {
+    runChat: RunChat,
     page: Page<TProps>,
     pending?: PendingConfig,
 }
-export const ConformsForm = <TProps: {}>(props: Props<TProps>) => {
-    const {page, pending} = props
+export const Chat = <TProps: {}>(props: Props<TProps>) => {
+    const {page, pending, runChat} = props
     const [data, setData] = React.useState<State | void>();
     const [stopped, setStopped] = React.useState<boolean>(false)
 
@@ -44,7 +45,7 @@ export const ConformsForm = <TProps: {}>(props: Props<TProps>) => {
         return () => {
             unsubscribe.forEach(e => e())
         }
-    }, []);
+    }, [setData, setStopped, runChat, page, pending]);
 
     if (!data) {
         return null

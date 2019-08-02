@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {createPage, questionBubble, input, ConformsForm, Stop, Repeat} from '..'
+import {createPage, questionBubble, input, Stop, Repeat, runChat} from '..'
+import {Chat} from '../ReactChat'
 import * as renderer from 'react-test-renderer'
 
 it('repeat', done => {
@@ -30,7 +31,7 @@ it('repeat', done => {
     })
     let tree
     renderer.act(() => {
-        tree = renderer.create(<ConformsForm page={page} />)
+        tree = renderer.create(<Chat runChat={runChat} page={page} />)
     })
         
     setTimeout(() => {

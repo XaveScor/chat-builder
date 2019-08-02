@@ -1,9 +1,10 @@
 /* @flow */
 import {Page} from './createPage'
 import * as React from 'react'
-import {ConformsForm} from './ReactForm'
+import {Chat} from './ReactChat'
 import {areEqualShallow} from './shallowEqual'
 import type {PendingConfig} from './types'
+import {runChat} from './runChat'
 
 function createComponent<TProps: {}>(
     page: Page<TProps>,
@@ -17,7 +18,8 @@ function createComponent<TProps: {}>(
             page.props.replace(props)
             oldProps = props
         }
-        return <ConformsForm
+        return <Chat
+            runChat={runChat}
             page={page}
             pending={params?.pending}
         />

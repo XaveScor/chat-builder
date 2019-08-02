@@ -118,3 +118,4 @@ export async function runChat<TProps: {}>(
         }
     }
 }
+export type RunChat = typeof runChat
