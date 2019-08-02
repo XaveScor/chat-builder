@@ -1,21 +1,26 @@
 /* @flow */
+export class TimeoutError extends Error {
+    constructor(message?: string) {
+        super(message)
+    }
+}
 
 export async function runWithTimeout<T>(
-    f: (abortController: AbortController) => Promise<T>,
+    f: (abortSignal: AbortSignal) => Promise<T>,
     duration: number,
-    abortController?: AbortController,
 ): Promise<T> {
-    const localAbortController = abortController || new AbortController()
+    const abortController = new AbortController()
+    const {signal} = abortController
     return new Promise((resolve, reject) => {
         let timeout
         if (duration >= 0) {
             timeout = setTimeout(() => {
-                localAbortController.abort()
-                reject()
+                abortController.abort()
+                reject(new TimeoutError())
             }, duration)
         }
 
-        f(localAbortController)
+        f(signal)
             .then(resolve)
             .catch(reject)
             .finally(() => {
