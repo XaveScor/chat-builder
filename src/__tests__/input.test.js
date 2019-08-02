@@ -53,6 +53,7 @@ it('input with props', async () => {
                     question: '123',
                 },
                 isAnswerable: true,
+                answer: answerBubble,
                 input: CustomInput,
                 inputProps: {
                     a: 1,
