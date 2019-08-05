@@ -9,7 +9,7 @@ export function createChatMock(
     notifyRender: number => void,
     start: EventType<void>,
 ) {
-    return <TProps: {}>(
+    return <TProps>(
         initPage: Page<TProps>,
         setup: {
             notifyView: NotifyViewEvent,

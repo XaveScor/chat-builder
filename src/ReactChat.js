@@ -19,7 +19,7 @@ type Props<TProps> = {
     page: Page<TProps>,
     pending?: PendingConfig,
 }
-export const Chat = <TProps: {}>(props: Props<TProps>) => {
+export const Chat = <TProps>(props: Props<TProps>) => {
     const {page, pending, runChat} = props
     const [data, setData] = React.useState<State | void>();
     const [stopped, setStopped] = React.useState<boolean>(false)

@@ -1,6 +1,5 @@
 /* @flow */
 
-import type {PageType} from './pageTypes'
 import type {Bubble, AnswerBubble} from './createBubble'
 import * as React from 'react';
 import type {EventType} from './event'
@@ -8,15 +7,13 @@ import type {Input} from './createInput'
 import {type Props, createProps} from './createProps'
 import {ValidationError} from './ValidationError'
 
-type TotalPage<TProps> = Page<TProps> | PageType
-
 export type StepResult = {
     id: any,
     value: any,
 }
 
 export type PrevousPageResult<TProps> = {
-    prevousPage: TotalPage<TProps>,
+    prevousPage: Page<TProps>,
     steps: $ReadOnlyArray<StepResult>,
 };
 
@@ -51,7 +48,7 @@ export type AnswerableStep = InternalAnswerableStep<*, *, *, *, *>
 
 export type TimeoutConfig<TProps> = {|
     duration: number,
-    page: TotalPage<TProps>,
+    page: Page<TProps>,
 |}
 
 export type NonFunction = 
@@ -60,12 +57,12 @@ export type NonFunction =
     | number
     | boolean
 
-type MapPrevousPageF<TProps, T: NonFunction> = ((PrevousPageResult<TProps>, void => TProps) => Promise<T> | T) 
+type MapPrevousPageF<TProps, T: NonFunction> = (PrevousPageResult<TProps>, void => TProps) => (Promise<T> | T) 
 export type MapPrevousPage<TProps, T: NonFunction> = 
     | MapPrevousPageF<TProps, T>
     | T
 
-type NextPage<TProps> = MapPrevousPage<TProps, TotalPage<TProps>>
+type NextPage<TProps> = MapPrevousPage<TProps, Page<TProps>>
 
 export type Config<TProps> = {|
     nextPage: NextPage<TProps>,
@@ -76,7 +73,7 @@ export type Config<TProps> = {|
 type SchemeFunction<TProps> = MapPrevousPageF<TProps, Config<TProps>>
 export type SchemeF<TProps> = MapPrevousPage<TProps, Config<TProps>>
 
-export class Page<TProps: {}> {
+export class Page<TProps> {
     +name: ?string
     schemeF: ?SchemeF<TProps>
     +props: Props<TProps>
@@ -94,19 +91,17 @@ type CreatePageArg<TProps> = string | SchemeFunction<TProps> | {|
     name?: string,
     props?: Props<TProps>,
 |}
-declare export function createPage(a?: string | {| name?: string |}): Page<{}>
-declare export function createPage<TProps>({| name?: string, props: Props<TProps> |} | SchemeFunction<TProps>): Page<TProps>
-export function createPage<TProps: {}>(
+export function createPage<TProps>(
     arg?: CreatePageArg<TProps>
-): Page<TProps | {}> {
+): Page<TProps> {
     if (typeof arg === 'string' || arg == null) {
-        return new Page(arg, createProps())
+        return new Page<any>(arg, createProps())
     }
     if (typeof arg === 'function') {
-        const page = new Page(null, createProps())
+        const page = new Page<TProps>(null, createProps<TProps>())
         page.use(arg)
         return page
     }
     const {name, props} = arg
-    return new Page<any>(name, props || createProps())
+    return new Page<TProps>(name, props || createProps<TProps>())
 }

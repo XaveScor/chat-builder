@@ -1,10 +1,7 @@
 /* @flow */
 import {createPage} from './createPage'
 
-export const Start = createPage('Start conforms');
-export const Stop = createPage('Stop conforms');
-export const Repeat = createPage('Repeat')
+export const Start = createPage<any>('Start conforms');
+export const Stop = createPage<any>('Stop conforms');
+export const Repeat = createPage<any>('Repeat')
 
-export type PageType =
-    | typeof Start
-    | typeof Stop

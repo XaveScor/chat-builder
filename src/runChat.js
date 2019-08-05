@@ -20,7 +20,7 @@ export type EditEvent = EventType<{
     result: any,
 }>
 
-async function callPrevousPageF<TProps: {}, T: NonFunction>(
+async function callPrevousPageF<TProps, T: NonFunction>(
     map: MapPrevousPage<TProps, T>,
     result: PrevousPageResult<TProps>,
     getProps: void => TProps,
@@ -32,7 +32,7 @@ async function callPrevousPageF<TProps: {}, T: NonFunction>(
     return map
 }
 
-export async function runChat<TProps: {}>(
+export async function runChat<TProps>(
     initPage: Page<TProps>,
     setup: {
         notifyView: NotifyViewEvent,
@@ -49,10 +49,10 @@ export async function runChat<TProps: {}>(
     const machine = new ChatMachine(setup.notifyView, setup.pending)
     let lastConfig: Config<TProps> | null = null
     while (true) {
-        const {name, schemeF, props} = currentPage;
-        if (schemeF == null) {
-            throw new Error(`You should declare schemeF in ${name || 'createPage'}.use method`);
+        if (!currentPage.schemeF) {
+            throw new Error(`You should declare schemeF in ${currentPage.name || 'createPage'}.use method`);
         }
+        const {schemeF, props} = currentPage;
         // TODO: fix flow type inference
         await machine.showPending()
         let currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData);
