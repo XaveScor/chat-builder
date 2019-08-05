@@ -1,9 +1,10 @@
+/* @flow */
 import {createPage, runChat, createProps, Stop} from '..'
 
 it('init props', done => {
     const value = {}
-    const shared = createProps(value)
-    const page = createPage({
+    const shared = createProps<{}>(value)
+    const page = createPage<{}>({
         props: shared,
     })
 
@@ -21,14 +22,15 @@ it('init props', done => {
     })
 })
 
+type Props = {a: number}
 it('change props during computation', done => {
     const oldProps = {a: 1};
-    const newProps = {b: 2};
-    const shared = createProps(oldProps)
-    const page1 = createPage({
+    const newProps = {a: 2};
+    const shared = createProps<Props>(oldProps)
+    const page1 = createPage<Props>({
         props: shared,
     })
-    const page2 = createPage({
+    const page2 = createPage<Props>({
         props: shared,
     })
 
