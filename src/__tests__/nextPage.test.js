@@ -1,4 +1,5 @@
-import {createPage, questionBubble, runChat, Stop} from '..'
+/* @flow */
+import {createPage, questionBubble, input, runChat, Stop} from '..'
 
 it('correct constant scenario', done => {
     const startPage = createPage()
@@ -10,7 +11,8 @@ it('correct constant scenario', done => {
                 question: questionBubble,
                 questionProps: {
                     question: '',
-                }
+                },
+                input,
             }
         ],
         nextPage: finalPage,
@@ -40,6 +42,7 @@ it('correct function scenario', done => {
                 questionProps: {
                     question: ''
                 },
+                input,
             }
         ],
         nextPage: () => finalPage,
