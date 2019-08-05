@@ -1,13 +1,11 @@
+/* @flow */
 import * as React from 'react';
 import {createPage, createPending, input, Stop, questionBubble, useChatBuilder, runChat} from '..'
 import {Chat} from '../ReactChat'
 import * as renderer from 'react-test-renderer'
-
-async function delay(timeout) {
-    return new Promise(resolve => {
-      setTimeout(resolve, timeout);
-    });
-  }
+import {delay} from '../common'
+import {createEvent} from '../event'
+import {createChatMock} from './common'
 
 const pending = createPending({
     component: () => 'pending',
@@ -17,7 +15,7 @@ const pendingConfig = {
     input,
 }
 
-it('ConformsForm', done => {
+it('ConformsForm', async () => {
     const startPage = createPage(async () => {
         await delay(700)
         return {
@@ -34,25 +32,28 @@ it('ConformsForm', done => {
         }
     })
 
-    let tree
+    const start = createEvent<void>()
+    function rerender(count) {}
+    const chatMock = createChatMock(rerender, start)
+    const tree = renderer
+        .create(<Chat runChat={chatMock} page={startPage} pending={pendingConfig} />)
+
     renderer.act(() => {
-        tree = renderer
-            .create(<Chat runChat={runChat} page={startPage} pending={pendingConfig} />)
+        start()
     })
+    await delay(600)
     
-    setTimeout(() => {
-        const res = tree.toJSON()
-        expect(res).toMatchSnapshot()
-        setTimeout(() => {
-            const res = tree.toJSON()
-            expect(res).toMatchSnapshot()
-            done()
-        }, 700)
-    }, 600)
+    const res1 = tree.toJSON()
+    expect(res1).toMatchSnapshot()
+
+    await delay(700)
+
+    const res2 = tree.toJSON()
+    expect(res2).toMatchSnapshot()
 });
 
-it('useChatBuilder', done => {
-    const startPage = createPage(async () => {
+it('useChatBuilder', async () => {
+    const startPage = createPage<void>(async () => {
         await delay(700)
         return {
             steps: [
@@ -68,26 +69,30 @@ it('useChatBuilder', done => {
         }
     })
 
-    const Form = (props) => {
+    const Form = () => {
         const Chat = useChatBuilder(startPage, {
             pending: pendingConfig,
         })
 
-        return <Chat runChat={runChat} {...props} />
+        return <Chat runChat={runChat} />
     }
 
-    let tree
-    renderer.act(() => {
-        tree = renderer.create(<Form />)
-    })
+    const start = createEvent<void>()
+    function rerender(count) {}
+    const chatMock = createChatMock(rerender, start)
     
-    setTimeout(() => {
-        const res = tree.toJSON()
-        expect(res).toMatchSnapshot()
-        setTimeout(() => {
-            const res = tree.toJSON()
-            expect(res).toMatchSnapshot()
-            done()
-        }, 700)
-    }, 600)
+    const tree = renderer.create(<Form />)
+    renderer.act(() => {
+        start
+    })
+
+    await delay(600)
+    
+    const res1 = tree.toJSON()
+    expect(res1).toMatchSnapshot()
+
+    await delay(700)
+
+    const res2 = tree.toJSON()
+    expect(res2).toMatchSnapshot()
 });

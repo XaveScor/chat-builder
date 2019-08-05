@@ -6,17 +6,21 @@ import {areEqualShallow} from './shallowEqual'
 import type {PendingConfig} from './types'
 import {runChat} from './runChat'
 
-function createComponent<TProps: {}>(
+function createComponent<TProps>(
     page: Page<TProps>,
     params?: {
         pending?: PendingConfig,
     },
 ): React.ComponentType<TProps> {
-    let oldProps = page.props.getData()
+    const {props: propsWrapper} = page 
     return (props: TProps) => {
-        if (!areEqualShallow(props, oldProps)) {
+        if (propsWrapper.isEmpty()) {
             page.props.replace(props)
-            oldProps = props
+        } else {
+            const oldProps = page.props.getData()
+            if (!areEqualShallow(props, oldProps)) {
+                page.props.replace(props)
+            }
         }
         return <Chat
             runChat={runChat}
@@ -26,7 +30,11 @@ function createComponent<TProps: {}>(
     }
 }
 
-export function useChatBuilder<TProps: {}>(
+type NonObject = string | number | boolean | void
+
+declare export function useChatBuilder<T: NonObject>(page: Page<T>, params: any): React.ComponentType<{}>
+declare export function useChatBuilder<T: {}>(page: Page<T>, params: any): React.ComponentType<T>
+export function useChatBuilder<TProps>(
     page: Page<TProps>,
     params?: {
         pending?: PendingConfig,
