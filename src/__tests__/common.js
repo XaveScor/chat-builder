@@ -44,3 +44,16 @@ export function createChatMock(
         return Promise.resolve()
     }
 }
+
+export class Mutex {
+    pipeline = Promise.resolve()
+    resolve: void => void = () => {}
+
+    release() {
+        this.resolve()
+    }
+
+    async wait() {
+        await this.pipeline.then(() => new Promise(r => this.resolve = r))
+    }
+}

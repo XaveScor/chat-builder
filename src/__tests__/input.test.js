@@ -1,7 +1,7 @@
 /* @flow */
 import * as React from 'react';
 import {createPage, questionBubble, input, Stop, answerBubble, createInput} from '..'
-import {createChatMock} from './common'
+import {createChatMock, Mutex} from './common'
 import {Chat} from '../ReactChat'
 import {delay} from '../common'
 import {createEvent} from '../event'
@@ -24,7 +24,10 @@ it('renders correctly', async () => {
     })
 
     const start = createEvent<void>()
-    function rerender(count) {}
+    const mutex = new Mutex()
+    function rerender(count) {
+        mutex.release()
+    }
     const chatMock = createChatMock(rerender, start)
     const tree = renderer.create(<Chat runChat={chatMock} page={startPage} />)
 
@@ -32,7 +35,7 @@ it('renders correctly', async () => {
         start()
     })
 
-    await delay(1000)
+    await mutex.wait()
 
     const res = tree.toJSON()
     expect(res).toMatchSnapshot()
@@ -64,7 +67,10 @@ it('input with props', async () => {
     })
 
     const start = createEvent<void>()
-    function rerender(count) {}
+    const mutex = new Mutex()
+    function rerender(count) {
+        mutex.release()
+    }
     const chatMock = createChatMock(rerender, start)
     const tree = renderer.create(<Chat runChat={chatMock} page={startPage} />)
 
@@ -72,7 +78,7 @@ it('input with props', async () => {
         start()
     })
 
-    await delay(1000)
+    await mutex.wait()
 
     const res = tree.toJSON()
     expect(res).toMatchSnapshot()

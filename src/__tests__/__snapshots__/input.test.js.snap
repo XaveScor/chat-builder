@@ -12,9 +12,17 @@ Array [
 `;
 
 exports[`renders correctly 1`] = `
-<p
-  className="robot"
->
-  
-</p>
+Array [
+  <p
+    className="robot"
+  >
+    
+  </p>,
+  <input
+    onChange={[Function]}
+  />,
+  <input
+    type="submit"
+  />,
+]
 `;
