@@ -3,7 +3,7 @@ import {Page} from './createPage'
 import * as React from 'react'
 import {Chat} from './ReactChat'
 import {areEqualShallow} from './shallowEqual'
-import type {PendingConfig} from './types'
+import type {PendingConfig, BubbleContainer} from './types'
 import {type RunChat, runChat} from './runChat'
 
 type ExtendedTProps<TProps> = {
@@ -14,6 +14,7 @@ function createComponent<TProps: {}>(
     page: Page<TProps>,
     params?: {
         pending?: PendingConfig,
+        bubbleContainer?: BubbleContainer,
     },
 ): React.ComponentType<ExtendedTProps<TProps>> {
     const {props: propsWrapper} = page 
@@ -31,6 +32,7 @@ function createComponent<TProps: {}>(
             runChat={runChatProps}
             page={page}
             pending={params?.pending}
+            bubbleContainer={params?.bubbleContainer}
         />
     }
 }

@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useChatBuilder 1`] = `
+Array [
+  <div>
+    <p
+      className="robot"
+    >
+      question
+    </p>
+  </div>,
+  <input
+    onChange={[Function]}
+  />,
+  <input
+    type="submit"
+  />,
+]
+`;

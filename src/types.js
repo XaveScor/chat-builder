@@ -27,3 +27,4 @@ type _PendingConfig<TInput: {}> = {
     inputProps?: TInput,
 }
 export type PendingConfig = _PendingConfig<*>
+export type BubbleContainer = React.ComponentType<{}>
