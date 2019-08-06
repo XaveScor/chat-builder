@@ -17,6 +17,7 @@ export type State = {
         props: {},
     },
 }
+export type NotifyBubbleEndF = (React.Node => void) | null
 export type NotifyViewEvent = EventType<State>;
 export type StopEvent = EventType<void>
 type _PendingConfig<TInput: {}> = {

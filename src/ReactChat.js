@@ -5,20 +5,26 @@ import {Page} from './createPage'
 import type {RunChat} from './runChat'
 import {createEvent} from './event'
 import type {NotifyViewEvent, State, PendingConfig, BubbleContainer} from './types'
+import {context} from './BubbleEnd'
 
 type DialogProps = {
     views: $PropertyType<State, 'dialog'>,
     pending?: $PropertyType<PendingConfig, 'pending'>,
     bubbleContainer?: BubbleContainer,
+    bubbleEnd: React.Node,
 }
-const Dialog = ({views, pending: Pending, bubbleContainer: Container}: DialogProps) => {
+const Dialog = ({views, pending: Pending, bubbleContainer: Container, bubbleEnd}: DialogProps) => {
     const list = views.map((v, idx) => <v.component {...v.props} key={idx} />)
+    const totalView = <>
+        {list}
+        {bubbleEnd}
+    </>
 
     if (Container != null) {
-        return <Container>{list}</Container>
+        return <Container>{totalView}</Container>
     }
 
-    return list
+    return totalView
 };
 
 type Props<TProps> = {
@@ -31,6 +37,7 @@ export const Chat = <TProps>(props: Props<TProps>) => {
     const {page, pending, runChat, bubbleContainer} = props
     const [data, setData] = React.useState<State | void>();
     const [stopped, setStopped] = React.useState<boolean>(false)
+    const [bubbleEnd, setBubbleEnd] = React.useState<React.Node>(null)
 
     React.useLayoutEffect(() => {
         const notifyViewEvent: NotifyViewEvent = createEvent();
@@ -65,8 +72,11 @@ export const Chat = <TProps>(props: Props<TProps>) => {
         <Dialog
             views={dialog}
             pending={pending?.pending}
+            bubbleEnd={bubbleEnd}
             bubbleContainer={bubbleContainer}
         />
-        {!stopped && input && <input.component {...input.props} key={dialog.length} />}
+        <context.Provider value={setBubbleEnd}>
+            {!stopped && input && <input.component {...input.props} key={dialog.length} />}
+        </context.Provider>
     </>
 }
