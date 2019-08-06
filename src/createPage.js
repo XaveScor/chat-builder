@@ -32,6 +32,7 @@ type InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput> = {|
     questionProps?: TProps,
     isAnswerable: true,
     validate?: TAns => (ValidationError | void),
+    resultF?: TAns => any,
     answer: AnswerBubble<TPropsAns, TAns>,
     answerProps?: TPropsAns,
     input: Input<TInput>,

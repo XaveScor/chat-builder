@@ -92,7 +92,9 @@ export class ChatMachine {
                     component: config.input,
                     props: inputProps,
                 })
-                resolve(answer)
+
+                const resultF = config.resultF || (_ => _)
+                resolve(resultF(answer))
             }
             this.notify({
                 component: config.question,
