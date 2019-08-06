@@ -4,16 +4,21 @@ import * as React from 'react'
 import {Chat} from './ReactChat'
 import {areEqualShallow} from './shallowEqual'
 import type {PendingConfig} from './types'
-import {runChat} from './runChat'
+import {type RunChat, runChat} from './runChat'
 
-function createComponent<TProps>(
+type ExtendedTProps<TProps> = {
+    ...$Exact<TProps>,
+    runChat?: RunChat,
+}
+function createComponent<TProps: {}>(
     page: Page<TProps>,
     params?: {
         pending?: PendingConfig,
     },
-): React.ComponentType<TProps> {
+): React.ComponentType<ExtendedTProps<TProps>> {
     const {props: propsWrapper} = page 
-    return (props: TProps) => {
+    return (props: ExtendedTProps<TProps>) => {
+        const runChatProps: RunChat = props.runChat || runChat
         if (propsWrapper.isEmpty()) {
             page.props.replace(props)
         } else {
@@ -23,7 +28,7 @@ function createComponent<TProps>(
             }
         }
         return <Chat
-            runChat={runChat}
+            runChat={runChatProps}
             page={page}
             pending={params?.pending}
         />
@@ -34,15 +39,15 @@ type NonObject = string | number | boolean | void
 
 declare export function useChatBuilder<T: NonObject>(page: Page<T>, params: any): React.ComponentType<{}>
 declare export function useChatBuilder<T: {}>(page: Page<T>, params: any): React.ComponentType<T>
-export function useChatBuilder<TProps>(
+export function useChatBuilder<TProps: {}>(
     page: Page<TProps>,
     params?: {
         pending?: PendingConfig,
     },
-): React.ComponentType<TProps> {
-    const componentRef = React.useRef<React.ComponentType<TProps> | null>(null)
+): React.ComponentType<ExtendedTProps<TProps>> {
+    const componentRef = React.useRef<React.ComponentType<ExtendedTProps<TProps>> | null>(null)
     if (!componentRef.current) {
-        componentRef.current = createComponent(page, params)
+        componentRef.current = createComponent<TProps>(page, params)
     }
 
     return componentRef.current

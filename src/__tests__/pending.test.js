@@ -1,23 +1,24 @@
 /* @flow */
 import * as React from 'react';
-import {createPage, createPending, input, Stop, questionBubble, useChatBuilder, runChat} from '..'
+import {createPage, createPending, input, Stop, questionBubble, useChatBuilder} from '..'
 import {Chat} from '../ReactChat'
 import * as renderer from 'react-test-renderer'
 import {delay} from '../common'
 import {createEvent} from '../event'
-import {createChatMock} from './common'
+import {createChatMock, Mutex} from './common'
 
 const pending = createPending({
     component: () => 'pending',
 })
 const pendingConfig = {
     pending,
+    pendingTimeout: 1, 
     input,
 }
 
 it('ConformsForm', async () => {
     const startPage = createPage(async () => {
-        await delay(700)
+        await delay(100)
         return {
             steps: [
                 {
@@ -33,7 +34,10 @@ it('ConformsForm', async () => {
     })
 
     const start = createEvent<void>()
-    function rerender(count) {}
+    const mutex = new Mutex()
+    function rerender(count) {
+        mutex.release()
+    }
     const chatMock = createChatMock(rerender, start)
     const tree = renderer
         .create(<Chat runChat={chatMock} page={startPage} pending={pendingConfig} />)
@@ -41,12 +45,13 @@ it('ConformsForm', async () => {
     renderer.act(() => {
         start()
     })
-    await delay(600)
+
+    await mutex.wait()
     
     const res1 = tree.toJSON()
     expect(res1).toMatchSnapshot()
 
-    await delay(700)
+    await mutex.wait()
 
     const res2 = tree.toJSON()
     expect(res2).toMatchSnapshot()
@@ -54,7 +59,7 @@ it('ConformsForm', async () => {
 
 it('useChatBuilder', async () => {
     const startPage = createPage<void>(async () => {
-        await delay(700)
+        await delay(1000)
         return {
             steps: [
                 {
@@ -69,29 +74,31 @@ it('useChatBuilder', async () => {
         }
     })
 
-    const Form = () => {
+    const Form = ({chatMock}) => {
         const Chat = useChatBuilder(startPage, {
             pending: pendingConfig,
         })
 
-        return <Chat runChat={runChat} />
+        return <Chat runChat={chatMock} />
     }
 
     const start = createEvent<void>()
-    function rerender(count) {}
+    const mutex = new Mutex()
+    function rerender(count) {
+        mutex.release()
+    }
     const chatMock = createChatMock(rerender, start)
-    
-    const tree = renderer.create(<Form />)
-    renderer.act(() => {
-        start
-    })
 
-    await delay(600)
+    const tree = renderer.create(<Form chatMock={chatMock} />)
+    renderer.act(() => {
+        start()
+    })
+    await mutex.wait()
     
     const res1 = tree.toJSON()
     expect(res1).toMatchSnapshot()
 
-    await delay(700)
+    await mutex.wait()
 
     const res2 = tree.toJSON()
     expect(res2).toMatchSnapshot()

@@ -13,11 +13,19 @@ Array [
 `;
 
 exports[`ConformsForm 2`] = `
-<p
-  className="robot"
->
-  question
-</p>
+Array [
+  <p
+    className="robot"
+  >
+    question
+  </p>,
+  <input
+    onChange={[Function]}
+  />,
+  <input
+    type="submit"
+  />,
+]
 `;
 
 exports[`useChatBuilder 1`] = `
@@ -33,9 +41,17 @@ Array [
 `;
 
 exports[`useChatBuilder 2`] = `
-<p
-  className="robot"
->
-  question
-</p>
+Array [
+  <p
+    className="robot"
+  >
+    question
+  </p>,
+  <input
+    onChange={[Function]}
+  />,
+  <input
+    type="submit"
+  />,
+]
 `;
