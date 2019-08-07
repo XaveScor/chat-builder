@@ -1,13 +1,12 @@
 /* @flow */
-export class TimeoutError extends Error {
-    constructor(message?: string) {
-        super(message)
-    }
-}
+export class TimeoutError extends Error {}
+
+export class ReturnError extends Error {}
 
 export async function runWithTimeout<T>(
     f: (abortSignal: AbortSignal) => Promise<T>,
     duration: number,
+    abortReturnSignal: AbortSignal,
 ): Promise<T> {
     const abortController = new AbortController()
     const {signal} = abortController
@@ -19,6 +18,10 @@ export async function runWithTimeout<T>(
                 reject(new TimeoutError())
             }, duration)
         }
+
+        abortReturnSignal.addEventListener('abort', () => {
+            reject(new ReturnError())
+        })
 
         f(signal)
             .then(resolve)
