@@ -4,6 +4,7 @@ type Watcher<T> = (arg: T) => void;
 export type EventType<T> = {
     (T): void,
     watch(Watcher<T>): () => void,
+    waitMessage(): Promise<T>,
 };
 
 export function createEvent<T>(): EventType<T> {
@@ -19,6 +20,16 @@ export function createEvent<T>(): EventType<T> {
             delete watchers[id];
         }
     };
+    Event.waitMessage = async () => {
+        return new Promise(resolve => {
+            const unsubscribe = Event.watch(data => {
+                resolve(data)
+                unsubscribe()
+            })
+        })
+    }
 
     return Event;
 }
+
+export type WaitMessage<Event> = $ElementType<Event, 'waitMessage'>

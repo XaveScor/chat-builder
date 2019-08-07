@@ -3,6 +3,7 @@ import type {EventType} from './event'
 import * as React from 'react'
 import type {Pending} from './createPending'
 import type {Input} from './createInput'
+import type {Config, StepResult} from './createPage'
 
 export type DialogElement = 
 {
@@ -29,3 +30,21 @@ type _PendingConfig<TInput: {}> = {
 }
 export type PendingConfig = _PendingConfig<*>
 export type BubbleContainer = React.ComponentType<{}>
+
+type MasterMessages =
+| {
+    type: 'showSteps',
+    steps: $PropertyType<Config<*>, 'steps'>,
+    timeoutDuration: number,
+}
+export type SendMessageToExecutorEvent = EventType<MasterMessages>
+
+type ExecutorMessages = 
+| {
+    type: 'steps',
+    results: $ReadOnlyArray<StepResult>,
+}
+| {
+    type: 'timeout'
+}
+export type SendMessageToMasterEvent = EventType<ExecutorMessages>

@@ -1,7 +1,6 @@
 // @flow
-import type {NotifyViewEvent, DialogElement, PendingConfig, State} from './types';
+import type {NotifyViewEvent, DialogElement, PendingConfig, State, StopEvent} from './types';
 import type {Step, TimeoutConfig, NonAnswerableStep, AnswerableStep} from './createPage';
-import type {EditEvent} from './runChat';
 import type {Bubble, AnswerBubble} from './createBubble'
 import {ValidationError} from './ValidationError'
 import {voidF} from './common'
@@ -9,7 +8,6 @@ import {voidF} from './common'
 type Args = {|
     config: Step,
     idx: number,
-    editEvent: EditEvent,
 |}
 
 const defaultTimeout = 500
@@ -18,10 +16,12 @@ export class ChatMachine {
     notifyView: NotifyViewEvent
     pendingTimeout: ?TimeoutID = null
     pending: ?PendingConfig
+    stopEvent: ?StopEvent
 
-    constructor(notifyView: NotifyViewEvent, pending?: PendingConfig) {
+    constructor(notifyView: NotifyViewEvent, pending: ?PendingConfig, stopEvent: ?StopEvent) {
         this.notifyView = notifyView
         this.pending = pending
+        this.stopEvent = stopEvent
     }
 
     async notify(
@@ -38,6 +38,12 @@ export class ChatMachine {
             dialog: this.dialog,
             input,
         })
+    }
+
+    async stop() {
+        if (this.stopEvent) {
+            this.stopEvent()
+        }
     }
 
     async showPending() {
@@ -125,7 +131,6 @@ export class ChatMachine {
     async runStep({
         config,
         idx,
-        editEvent,
     }: Args) {
         const pending = this.pending
         if (this.pendingTimeout != null && pending != null) {
