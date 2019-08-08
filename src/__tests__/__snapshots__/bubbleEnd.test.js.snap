@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`children: react component 1`] = `
+<div>
+  <p
+    className="robot"
+  >
+    question
+  </p>
+  <div>
+    1232132
+  </div>
+</div>
+`;
+
 exports[`useChatBuilder 1`] = `
 <div>
   <p

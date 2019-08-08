@@ -16,5 +16,5 @@ type CreateInputArg<T> = {|
 export function createInput<T>({
     component,
 }: CreateInputArg<T>) {
-    return component
+    return React.memo<InputProps<T>>(component)
 }
