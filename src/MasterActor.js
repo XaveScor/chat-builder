@@ -49,33 +49,48 @@ export class MasterActor<TProps> {
             prevousPage: pageTypes.Start,
             steps: [],
         };
+        const pageResultsHistory: Array<Config<TProps>> = []
     
         let currentPage = this.initPage;
-        let lastConfig: Config<TProps> | null = null
+        let currentPageResult: Config<TProps>
+        let returnPageResult: ?Config<TProps> = null
         while (true) {
-            if (!currentPage.schemeF) {
-                throw new Error(`You should declare schemeF in ${currentPage.name || 'createPage'}.use method`);
+            if (currentPage === pageTypes.Stop) {
+                this.chatMachine.stop()
+                return
             }
-            const {schemeF, props} = currentPage;
 
-            this.chatMachine.showPending()
-            // TODO: fix flow type inference
-            let currentPart: Config<TProps> = await callPrevousPageF(schemeF, result, props.getData);
-            if (currentPart.nextPage === pageTypes.Repeat) {
-                if (lastConfig == null) {
-                    throw new Error(`You cannot use Repeat at init page`);
+            const {props} = currentPage;
+            if (!returnPageResult) {
+                if (!currentPage.schemeF) {
+                    throw new Error(`You should declare schemeF in ${currentPage.name || 'createPage'}.use method`);
                 }
-                currentPart = lastConfig;
+                const {schemeF} = currentPage;
+
+                this.chatMachine.showPending()
+                // TODO: fix flow type inference
+                currentPageResult = await callPrevousPageF(schemeF, result, props.getData);
+                if (currentPageResult.nextPage === pageTypes.Repeat) {
+                    if (pageResultsHistory.length === 0) {
+                        throw new Error(`You cannot use Repeat at init page`);
+                    }
+                    currentPageResult = pageResultsHistory[pageResultsHistory.length - 1];
+                }
+            } else {
+                currentPageResult = returnPageResult
+                returnPageResult = null
             }
-            lastConfig = currentPart
-            const {nextPage, steps, timeout} = currentPart;
-    
+
+            pageResultsHistory.push(currentPageResult)
+            const {nextPage, steps, timeout, isReturnable} = currentPageResult;
             const duration = timeout != null ? timeout.duration : -1;
 
             this.sendMessageToExecutorEvent({
                 type: 'showSteps',
                 steps,
                 timeoutDuration: duration,
+                isReturnable: Boolean(isReturnable),
+                pageId: pageResultsHistory.length - 1,
             })
             const executorMessage = await this.getExecutorMessageAsync()
             switch (executorMessage.type) {
@@ -97,11 +112,12 @@ export class MasterActor<TProps> {
                         currentPage = await callPrevousPageF(nextPage, result, props.getData)
                     }
                     break
-            }
-    
-            if (currentPage === pageTypes.Stop) {
-                this.chatMachine.stop()
-                return
+                case 'back':
+                    const {pageId} = executorMessage
+                    returnPageResult = pageResultsHistory[pageId]
+                    pageResultsHistory.length = pageId
+                    this.chatMachine.removeDialog(pageId)
+                    break
             }
         }
     }

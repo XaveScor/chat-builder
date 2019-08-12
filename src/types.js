@@ -12,7 +12,7 @@ export type DialogElement =
 }
 
 export type State = {
-    dialog: Array<DialogElement>,
+    dialog: $ReadOnlyArray<DialogElement>,
     input?: {
         component: React.ComponentType<{}>,
         props: {},
@@ -36,6 +36,8 @@ type MasterMessages =
     type: 'showSteps',
     steps: $PropertyType<Config<*>, 'steps'>,
     timeoutDuration: number,
+    isReturnable: boolean,
+    pageId: number,
 }
 export type SendMessageToExecutorEvent = EventType<MasterMessages>
 
@@ -46,5 +48,9 @@ type ExecutorMessages =
 }
 | {
     type: 'timeout'
+}
+| {
+    type: 'back',
+    pageId: number,
 }
 export type SendMessageToMasterEvent = EventType<ExecutorMessages>

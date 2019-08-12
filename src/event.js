@@ -5,12 +5,15 @@ export type EventType<T> = {
     (T): void,
     watch(Watcher<T>): () => void,
     waitMessage(): Promise<T>,
+    lastMessage(): T | void,
 };
 
 export function createEvent<T>(): EventType<T> {
     const watchers: Array<Watcher<T>> = [];
 
+    let lastMessage: T | void
     function Event(arg: T) {
+        lastMessage = arg
         watchers.forEach(f => f(arg))
     }
     Event.watch = (subscriber: Watcher<T>) => {
@@ -28,6 +31,7 @@ export function createEvent<T>(): EventType<T> {
             })
         })
     }
+    Event.lastMessage = () => lastMessage
 
     return Event;
 }

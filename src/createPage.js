@@ -69,6 +69,7 @@ export type Config<TProps> = {|
     nextPage: NextPage<TProps>,
     steps: $ReadOnlyArray<Step>,
     timeout?: TimeoutConfig<TProps>,
+    isReturnable?: boolean,
 |};
 
 type SchemeFunction<TProps> = MapPrevousPageF<TProps, Config<TProps>>

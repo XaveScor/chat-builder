@@ -6,6 +6,8 @@ type AnswerBubbleComponent<TProps: {}, TAns> = BubbleComponent<{
     ...$Exact<TProps>,
     answer: TAns,
     handleEditAnswer: ?(void => void),
+    onBackToPage: ?(void => void),
+    stepOrderId: number,
 }>
 export type Bubble<TProps> = BubbleComponent<TProps>
 export type AnswerBubble<TProps, TAns> = AnswerBubbleComponent<TProps, TAns>

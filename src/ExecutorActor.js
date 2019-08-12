@@ -26,33 +26,43 @@ export class ExecutorActor {
             const message = await this.getMasterMessageAsync()
             switch (message.type) {
                 case 'showSteps':
-                    const {steps, timeoutDuration} = message
-
-                    const returnToPartEvent = createEvent<void>()
+                    const {steps, timeoutDuration, isReturnable, pageId} = message
                     const returnController = new AbortController()
+                    const onBackToPage = isReturnable
+                        ? () => {
+                            returnController.abort()
+                            this.sendMessageToMasterEvent({
+                                type: 'back',
+                                pageId,
+                            })
+                        }
+                        : null
 
                     try {
-                    const res = await runWithTimeout(async abortController => {
-                        const results: Array<StepResult> = []
+                        const res = await runWithTimeout(async abortController => {
+                            const results: Array<StepResult> = []
 
-                        for (const step of steps) {
-                            const stepResult = await this.chatMachine.runStep({
-                                config: step,
-                                idx: 0,
-                            });
-                            results.push({
-                                id: step.id,
-                                value: stepResult,
-                            });
-                        }
-        
-                        return results;
-                    }, timeoutDuration, returnController.signal)
+                            for (let i = 0; i < steps.length; ++i) {
+                                const step = steps[i]
+                                const stepResult = await this.chatMachine.runStep({
+                                    config: step,
+                                    orderId: i,
+                                    onBackToPage,
+                                    pageId,
+                                });
+                                results.push({
+                                    id: step.id,
+                                    value: stepResult,
+                                });
+                            }
+            
+                            return results;
+                        }, timeoutDuration, returnController.signal)
 
-                    this.sendMessageToMasterEvent({
-                        type: 'steps',
-                        results: res,
-                    })
+                        this.sendMessageToMasterEvent({
+                            type: 'steps',
+                            results: res,
+                        })
                     } catch (e) {
                         if (e instanceof TimeoutError) {
                             this.sendMessageToMasterEvent({
