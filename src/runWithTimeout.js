@@ -1,4 +1,6 @@
 /* @flow */
+import type {EventType} from './event'
+
 export class TimeoutError extends Error {}
 
 export class ReturnError extends Error {}
@@ -6,7 +8,7 @@ export class ReturnError extends Error {}
 export async function runWithTimeout<T>(
     f: (abortSignal: AbortSignal) => Promise<T>,
     duration: number,
-    abortReturnSignal: AbortSignal,
+    breakEvent: EventType<void>,
 ): Promise<T> {
     const abortController = new AbortController()
     const {signal} = abortController
@@ -19,7 +21,8 @@ export async function runWithTimeout<T>(
             }, duration)
         }
 
-        abortReturnSignal.addEventListener('abort', () => {
+        breakEvent.watch(() => {
+            abortController.abort()
             reject(new ReturnError())
         })
 

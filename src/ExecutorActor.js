@@ -22,15 +22,15 @@ export class ExecutorActor {
     }
 
     async run() {
+        const breakEvent = createEvent<void>()
         while (true) {
             const message = await this.getMasterMessageAsync()
             switch (message.type) {
                 case 'showSteps':
                     const {steps, timeoutDuration, isReturnable, pageId} = message
-                    const returnController = new AbortController()
                     const onBackToPage = isReturnable
                         ? () => {
-                            returnController.abort()
+                            breakEvent()
                             this.sendMessageToMasterEvent({
                                 type: 'back',
                                 pageId,
@@ -57,7 +57,7 @@ export class ExecutorActor {
                             }
             
                             return results;
-                        }, timeoutDuration, returnController.signal)
+                        }, timeoutDuration, breakEvent)
 
                         this.sendMessageToMasterEvent({
                             type: 'steps',
