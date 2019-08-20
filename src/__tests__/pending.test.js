@@ -1,6 +1,6 @@
 /* @flow */
 import * as React from 'react';
-import {createPage, createPending, input, Stop, questionBubble, useChatBuilder} from '..'
+import {createPage, createPending, input, Stop, questionBubble, useChatBuilder, createInput} from '..'
 import {Chat} from '../ReactChat'
 import * as renderer from 'react-test-renderer'
 import {delay} from '../common'
@@ -10,10 +10,15 @@ import {createChatMock, Mutex} from './common'
 const pending = createPending({
     component: () => 'pending',
 })
+
+const pendingInput = createInput({
+    component: () => 'pending input',
+})
+
 const pendingConfig = {
     pending,
-    pendingTimeout: 1, 
-    input,
+    pendingTimeout: 50, 
+    input: pendingInput,
 }
 
 it('ConformsForm', async () => {
@@ -46,20 +51,23 @@ it('ConformsForm', async () => {
         start()
     })
 
+    const resOnlyInputChange = tree.toJSON()
+    expect(resOnlyInputChange).toMatchSnapshot()
+
     await mutex.wait()
     
-    const res1 = tree.toJSON()
-    expect(res1).toMatchSnapshot()
+    const resShowPending = tree.toJSON()
+    expect(resShowPending).toMatchSnapshot()
 
     await mutex.wait()
 
-    const res2 = tree.toJSON()
-    expect(res2).toMatchSnapshot()
+    const resHidePending = tree.toJSON()
+    expect(resHidePending).toMatchSnapshot()
 });
 
 it('useChatBuilder', async () => {
     const startPage = createPage<void>(async () => {
-        await delay(1000)
+        await delay(100)
         return {
             steps: [
                 {
@@ -93,13 +101,17 @@ it('useChatBuilder', async () => {
     renderer.act(() => {
         start()
     })
+    
+    const resOnlyInputChange = tree.toJSON()
+    expect(resOnlyInputChange).toMatchSnapshot()
+
     await mutex.wait()
     
-    const res1 = tree.toJSON()
-    expect(res1).toMatchSnapshot()
+    const resShowPending = tree.toJSON()
+    expect(resShowPending).toMatchSnapshot()
 
     await mutex.wait()
 
-    const res2 = tree.toJSON()
-    expect(res2).toMatchSnapshot()
+    const resHidePending = tree.toJSON()
+    expect(resHidePending).toMatchSnapshot()
 });

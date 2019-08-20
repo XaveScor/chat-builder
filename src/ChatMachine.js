@@ -71,6 +71,15 @@ export class ChatMachine {
         const {pendingTimeout} = pending
         const timeout = pendingTimeout || defaultTimeout
 
+        // show only input
+        this.notify(null, {
+            component: pending.input,
+            props: {
+                ...pending.inputProps,
+                isAnswerable: false,
+            },
+        }, pendingId)
+
         this.pendingTimeout = setTimeout(() => {
             this.notify({
                 component: pending.pending,

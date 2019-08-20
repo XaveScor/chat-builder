@@ -1,18 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConformsForm 1`] = `
+exports[`ConformsForm 1`] = `"pending input"`;
+
+exports[`ConformsForm 2`] = `
 Array [
   "pending",
-  <input
-    onChange={[Function]}
-  />,
-  <input
-    type="submit"
-  />,
+  "pending input",
 ]
 `;
 
-exports[`ConformsForm 2`] = `
+exports[`ConformsForm 3`] = `
 Array [
   <p
     className="robot"
@@ -28,19 +25,16 @@ Array [
 ]
 `;
 
-exports[`useChatBuilder 1`] = `
+exports[`useChatBuilder 1`] = `"pending input"`;
+
+exports[`useChatBuilder 2`] = `
 Array [
   "pending",
-  <input
-    onChange={[Function]}
-  />,
-  <input
-    type="submit"
-  />,
+  "pending input",
 ]
 `;
 
-exports[`useChatBuilder 2`] = `
+exports[`useChatBuilder 3`] = `
 Array [
   <p
     className="robot"
