@@ -105,6 +105,7 @@ export class ChatMachine {
                         props: {
                             ...inputProps,
                             error: error.message,
+                            onSubmit: handleInputSubmit,
                         }
                     }, pageId)
                 }
