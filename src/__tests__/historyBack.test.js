@@ -65,17 +65,17 @@ it('back function', async () => {
     
     expect(dialogBeforeBack).not.toBe(null)
     /*:: if (!dialogBeforeBack) {throw new Error()} */
-    expect(dialogBeforeBack.dialog.length).toBe(2)
-    expect(dialogBeforeBack.dialog[0].props.onBackToPage).not.toBe(null)
-    expect(dialogBeforeBack.dialog[0].props.onBackToPage).toBeInstanceOf(Function)
-    expect(dialogBeforeBack.dialog[1].props.onBackToPage).toBe(null)
+    expect(dialogBeforeBack.dialog.size).toBe(2)
+    expect(dialogBeforeBack.dialog.get(0).props.onBackToPage).not.toBe(null)
+    expect(dialogBeforeBack.dialog.get(0).props.onBackToPage).toBeInstanceOf(Function)
+    expect(dialogBeforeBack.dialog.get(1).props.onBackToPage).toBe(null)
 
-    dialogBeforeBack.dialog[0].props.onBackToPage()
+    dialogBeforeBack.dialog.get(0).props.onBackToPage()
 
     await arterBackMutex.wait()
     const dialogAfterBack = viewEvent.lastMessage()
     /*:: if (!dialogAfterBack) {throw new Error()} */
-    expect(dialogAfterBack.dialog.length).toBe(1)
+    expect(dialogAfterBack.dialog.size).toBe(1)
 })
 
 
@@ -129,8 +129,8 @@ it('orderId', async () => {
     
     expect(dialogBeforeBack).not.toBe(null)
     /*:: if (!dialogBeforeBack) {throw new Error()} */
-    expect(dialogBeforeBack.dialog.length).toBe(2)
-    expect(dialogBeforeBack.dialog[0].props.stepOrderId).toBe(0)
-    expect(dialogBeforeBack.dialog[1].props.stepOrderId).toBe(1)
+    expect(dialogBeforeBack.dialog.size).toBe(2)
+    expect(dialogBeforeBack.dialog.get(0).props.stepOrderId).toBe(0)
+    expect(dialogBeforeBack.dialog.get(1).props.stepOrderId).toBe(1)
 })
 

@@ -4,6 +4,7 @@ import * as React from 'react'
 import type {Pending} from './createPending'
 import type {Input} from './createInput'
 import type {Config, StepResult} from './createPage'
+import {OrderedMap} from 'immutable'
 
 export type DialogElement = 
 {
@@ -12,7 +13,7 @@ export type DialogElement =
 }
 
 export type State = {
-    dialog: $ReadOnlyArray<DialogElement>,
+    dialog: OrderedMap<any, DialogElement>,
     input?: {
         component: React.ComponentType<{}>,
         props: {},

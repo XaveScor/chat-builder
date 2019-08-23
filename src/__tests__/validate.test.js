@@ -46,7 +46,7 @@ it('onSumbit function cannot sended after invalid validation', async () => {
     
     expect(validMessage).toBeDefined()
     /*:: if (!validMessage) {throw new Error()} */
-    expect(validMessage.dialog.length).toBe(1)
+    expect(validMessage.dialog.size).toBe(1)
     expect(validMessage.input.props.onSubmit).toBeDefined()
     
     validMessage.input.props.onSubmit('123')
@@ -54,6 +54,6 @@ it('onSumbit function cannot sended after invalid validation', async () => {
     const invalidMessage = viewEvent.lastMessage()
     expect(invalidMessage).toBeDefined()
     /*:: if (!invalidMessage) {throw new Error()} */
-    expect(invalidMessage.dialog.length).toBe(1)
+    expect(invalidMessage.dialog.size).toBe(1)
     expect(invalidMessage.input.props.onSubmit).toBeDefined()
 })

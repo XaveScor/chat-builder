@@ -14,7 +14,9 @@ type DialogProps = {
     bubbleEnd: React.Node,
 }
 const Dialog = ({views, pending: Pending, bubbleContainer: Container, bubbleEnd}: DialogProps) => {
-    const list = views.map((v, idx) => <v.component {...v.props} key={idx} />)
+    const list = Array.from(
+        views.map((v, idx) => <v.component {...v.props} key={idx} />).values()
+    )
     const totalView = <>
         {list}
         {bubbleEnd}
@@ -76,7 +78,7 @@ export const Chat = <TProps>(props: Props<TProps>) => {
             bubbleContainer={bubbleContainer}
         />
         <context.Provider value={setBubbleEnd}>
-            {!stopped && input && <input.component {...input.props} key={dialog.length} />}
+            {!stopped && input && <input.component {...input.props} key={dialog.size} />}
         </context.Provider>
     </>
 }

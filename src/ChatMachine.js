@@ -1,60 +1,56 @@
 // @flow
-import type {NotifyViewEvent, DialogElement, PendingConfig, State, StopEvent} from './types';
+import type {PendingConfig, StopEvent} from './types';
 import type {Step, TimeoutConfig, NonAnswerableStep, AnswerableStep} from './createPage';
 import type {Bubble, AnswerBubble} from './createBubble'
 import {ValidationError} from './ValidationError'
 import {voidF} from './common'
-import type {EventType} from './event'
+import type {LowLevelChatMachine} from './LowLevelChatMachine'
+import type {Id as MessageId} from './IdGenerator'
 
 type Args = {|
     config: Step,
     orderId: number,
-    onBackToPage: ?(void => void),
+    onBackToPage: ?(void => mixed),
     pageId: number,
+    onChange: ?(void => mixed),
 |}
 
-type EnhancedDialogElement = {
-    ...$Exact<DialogElement>,
-    pageId: number,
+type PendingStartedType = {
+    messageId: MessageId,
+    timeoutId: TimeoutID,
 }
 
 const defaultTimeout = 500
-const pendingId = -99999
 export class ChatMachine {
-    dialog: Array<EnhancedDialogElement> = []
-    notifyView: NotifyViewEvent
-    pendingTimeout: ?TimeoutID = null
-    pending: ?PendingConfig
-    stopEvent: ?StopEvent
+    +lowLevelMachine: LowLevelChatMachine
+    +pending: ?PendingConfig
+    +stopEvent: ?StopEvent
 
-    constructor(notifyView: NotifyViewEvent, pending: ?PendingConfig, stopEvent: ?StopEvent) {
-        this.notifyView = notifyView
+    pendingStarted: ?PendingStartedType = null
+    pageToMessageMapping = new Map<number, Set<MessageId>>()
+
+    constructor(lowLevelMachine: LowLevelChatMachine, pending: ?PendingConfig, stopEvent: ?StopEvent) {
+        this.lowLevelMachine = lowLevelMachine
         this.pending = pending
         this.stopEvent = stopEvent
     }
 
-    async notify(
-        newDialogElement: DialogElement | null,
-        input: $PropertyType<State, 'input'>,
-        pageId: number,
-    ) {
-        if (newDialogElement != null) {
-            this.dialog = [
-                ...this.dialog,
-                {
-                    ...newDialogElement,
-                    pageId,
-                },
-            ]
-        }
-        this.notifyView({
-            dialog: this.dialog,
-            input,
-        })
-    }
-
     async removeDialog(id: number) {
-        this.dialog = this.dialog.filter(el => el.pageId < id)
+        const deletedPageIds: Array<number> = []
+        const deletedMessageIds: Array<MessageId> = []
+        for (const [pageId, messageIdSet] of this.pageToMessageMapping) {
+            if (pageId < id) {
+                continue
+            }
+
+            deletedMessageIds.push(...messageIdSet)
+            deletedPageIds.push(pageId)
+        }
+
+        this.lowLevelMachine.delete(deletedMessageIds)
+        for (const pageId of deletedPageIds) {
+            this.pageToMessageMapping.delete(pageId)
+        }
     }
 
     async stop() {
@@ -64,40 +60,52 @@ export class ChatMachine {
     }
 
     async showPending() {
-        const pending = this.pending
-        if (this.pendingTimeout != null || pending == null) {
+        if (this.pendingStarted != null || this.pending == null) {
             return;
         }
-        const {pendingTimeout} = pending
-        const timeout = pendingTimeout || defaultTimeout
+        const {
+            pendingTimeout = defaultTimeout,
+            input,
+            inputProps,
+            pending,
+            pendingProps,
+        } = this.pending
 
-        // show only input
-        this.notify(null, {
-            component: pending.input,
+        const inputConfig = {
+            component: input,
             props: {
-                ...pending.inputProps,
+                ...inputProps,
                 isAnswerable: false,
             },
-        }, pendingId)
+        }
 
-        this.pendingTimeout = setTimeout(() => {
-            this.notify({
-                component: pending.pending,
-                props: pending.pendingProps,
-            }, {
-                component: pending.input,
-                props: {
-                    ...pending.inputProps,
-                    isAnswerable: false,
-                },
-            }, pendingId)
-        }, timeout)
+        // show only input
+        const messageId = this.lowLevelMachine.push(null, inputConfig)
+
+        const timeoutId = setTimeout(() => {
+            this.lowLevelMachine.delete([messageId])
+
+            const secondMessageId = this.lowLevelMachine.push({
+                component: pending,
+                props: pendingProps,
+            }, inputConfig)
+
+            this.pendingStarted = {
+                messageId: secondMessageId,
+                timeoutId,
+            }
+        }, pendingTimeout)
+
+        this.pendingStarted = {
+            messageId,
+            timeoutId,
+        }
     }
 
     async runAnswerableStep(
         config: AnswerableStep,
         orderId: number,
-        onBackToPage: ?(void => void),
+        onBackToPage: ?(void => mixed),
         pageId: number,
     ) {
         const inputProps = {
@@ -109,17 +117,19 @@ export class ChatMachine {
             const handleInputSubmit = (answer: any) => {
                 const error = validate(answer)
                 if (error instanceof ValidationError) {
-                    return this.notify(null, {
+                    const errorMessageId = this.lowLevelMachine.push(null, {
                         component: config.input,
                         props: {
                             ...inputProps,
                             error: error.message,
                             onSubmit: handleInputSubmit,
                         }
-                    }, pageId)
+                    })
+                    this.saveMessageId(errorMessageId, pageId)
+                    return 
                 }
 
-                this.notify({
+                const answerMessageId = this.lowLevelMachine.push({
                     component: config.answer,
                     props: {
                         ...config.answerProps,
@@ -131,12 +141,13 @@ export class ChatMachine {
                 }, {
                     component: config.input,
                     props: inputProps,
-                }, pageId)
+                })
+                this.saveMessageId(answerMessageId, pageId)
 
                 const resultF = config.resultF || (_ => _)
                 resolve(resultF(answer))
             }
-            this.notify({
+            const questionMessageId = this.lowLevelMachine.push({
                 component: config.question,
                 props: {
                     ...config.questionProps,
@@ -149,17 +160,28 @@ export class ChatMachine {
                     ...inputProps,
                     onSubmit: handleInputSubmit,
                 },
-            }, pageId)
+            })
+
+            this.saveMessageId(questionMessageId, pageId)
         })
+    }
+
+    saveMessageId(messageId: MessageId, pageId: number) {
+        let messagesSet = this.pageToMessageMapping.get(pageId)
+        if (!messagesSet) {
+            messagesSet = new Set<MessageId>()
+            this.pageToMessageMapping.set(pageId, messagesSet)
+        }
+        messagesSet.add(messageId)
     }
 
     async runNonAnswerableStep(
         config: NonAnswerableStep,
         orderId: number,
-        onBackToPage: ?(void => void),
+        onBackToPage: ?(void => mixed),
         pageId: number,
     ) {
-        await this.notify({
+        const messageId = this.lowLevelMachine.push({
             component: config.question,
             props: {
                 ...config.questionProps,
@@ -172,21 +194,23 @@ export class ChatMachine {
                 ...config.inputProps,
                 isAnswerable: false,
             },
-        }, pageId)
+        })
+
+        this.saveMessageId(messageId, pageId)
     }
 
     async runStep({
         config,
         orderId,
         onBackToPage,
+        onChange,
         pageId,
     }: Args) {
-        const pending = this.pending
-        if (this.pendingTimeout != null && pending != null) {
-            clearTimeout(this.pendingTimeout)
-            this.pendingTimeout = null
-            // clear last `pending` element
-            this.dialog = this.dialog.filter(el => el.pageId !== pendingId)
+        if (this.pendingStarted) {
+            const {timeoutId, messageId} = this.pendingStarted
+            clearTimeout(timeoutId)
+            this.lowLevelMachine.delete([messageId])
+            this.pendingStarted = null
         }
 
         return config.isAnswerable

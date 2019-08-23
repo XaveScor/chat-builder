@@ -5,6 +5,7 @@ import {createEvent} from './event'
 import {ExecutorActor} from './ExecutorActor'
 import {MasterActor} from './MasterActor'
 import {ChatMachine} from './ChatMachine'
+import {LowLevelChatMachine} from './LowLevelChatMachine'
 
 export async function runChat<TProps>(
     initPage: Page<TProps>,
@@ -17,7 +18,8 @@ export async function runChat<TProps>(
     const sendMessageToExecutorEvent: SendMessageToExecutorEvent = createEvent()
     const sendMessageToMasterEvent: SendMessageToMasterEvent = createEvent()
 
-    const machine = new ChatMachine(setup.notifyView, setup.pending, setup.stopEvent)
+    const lowLevelMachine = new LowLevelChatMachine(setup.notifyView)
+    const machine = new ChatMachine(lowLevelMachine, setup.pending, setup.stopEvent)
     const masterActor = new MasterActor<TProps>(
         sendMessageToExecutorEvent,
         sendMessageToMasterEvent.waitMessage,
