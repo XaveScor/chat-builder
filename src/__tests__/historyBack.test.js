@@ -1,8 +1,9 @@
 /* @flow */
-import { createChatMock, Mutex } from './common'
+
 import { createEvent } from '../event'
-import { createPage, questionBubble, input, Stop } from '..'
 import type { NotifyViewEvent } from '../types'
+import { createChatMock, Mutex } from './common'
+import { createPage, questionBubble, input, Stop } from '..'
 
 it('back function', async () => {
 	const firstPage = createPage()

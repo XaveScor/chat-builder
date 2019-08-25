@@ -1,11 +1,9 @@
 /* @flow */
 import * as React from 'react'
-import { createPage, createPending, input, Stop, questionBubble, useChatBuilder } from '..'
-import { Chat } from '../ReactChat'
 import * as renderer from 'react-test-renderer'
-import { delay } from '../common'
 import { createEvent } from '../event'
 import { createChatMock, Mutex } from './common'
+import { createPage, input, Stop, questionBubble, useChatBuilder } from '..'
 
 it('useChatBuilder', async () => {
 	const startPage = createPage<void>(() => ({
@@ -31,7 +29,7 @@ it('useChatBuilder', async () => {
 
 	const start = createEvent<void>()
 	const mutex = new Mutex()
-	function rerender(count) {
+	function rerender() {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)

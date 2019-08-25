@@ -1,5 +1,4 @@
 /* @flow */
-import * as pageTypes from './pageTypes'
 import { ChatMachine } from './ChatMachine'
 import type { SendMessageToExecutorEvent, SendMessageToMasterEvent } from './types'
 import type { StepResult } from './createPage'
@@ -40,7 +39,7 @@ export class ExecutorActor {
 
 					try {
 						const res = await runWithTimeout(
-							async (abortController) => {
+							async () => {
 								const results: Array<StepResult> = []
 
 								for (let i = 0; i < steps.length; ++i) {

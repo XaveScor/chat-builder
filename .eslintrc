@@ -1,0 +1,46 @@
+{
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "env": {
+        "jest": true,
+        "es6": true,
+        "browser": true,
+        "node": true
+    },
+    "parser": "babel-eslint",
+    "plugins": [
+        "prettier",
+        "import",
+        "import-order-autofix",
+        "babel",
+        "react"
+    ],
+    "extends": [
+        "plugin:react/recommended",
+    ],
+    "rules": {
+        "import/no-cycle": 2,
+        "import/no-duplicates": 2,
+        "import/order": 1,
+        "import/no-default-export": 2,
+        "prettier/prettier": 2,
+        "import-order-autofix/order": 2,
+        "no-unused-vars": 1,
+        "babel/camelcase": 1,
+        "babel/no-invalid-this": 1,
+        "babel/no-unused-expressions": 1,
+        "babel/valid-typeof": 1,
+        "react/prop-types": 0,
+        "react/display-name": 0
+    },
+    "settings": {
+        "react": {
+            "version": "16.9",
+            "flowVersion": "0.104"
+        }
+    }
+  }

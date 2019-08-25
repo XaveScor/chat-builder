@@ -1,15 +1,16 @@
 /* @flow */
-import { createChatMock, Mutex } from './common'
+
 import { createEvent } from '../event'
-import { createPage, questionBubble, input, Stop, answerBubble, ValidationError } from '..'
 import type { NotifyViewEvent } from '../types'
+import { Mutex, createChatMock } from './common'
+import { createPage, questionBubble, input, Stop, answerBubble, ValidationError } from '..'
 
 it('onSumbit function cannot sended after invalid validation', async () => {
 	const firstPage = createPage()
 
 	const start = createEvent<void>()
 	const mutex = new Mutex()
-	function rerender(count) {
+	function rerender() {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)

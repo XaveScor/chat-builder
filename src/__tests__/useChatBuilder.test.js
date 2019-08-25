@@ -1,6 +1,6 @@
-import { createPage, questionBubble, input, runChat, createProps, Stop, useChatBuilder } from '..'
 import * as React from 'react'
 import * as renderer from 'react-test-renderer'
+import { createPage, questionBubble, input, createProps, Stop, useChatBuilder } from '..'
 
 it('init props', (done) => {
 	const value = { a: 'incorrect props sharing' }

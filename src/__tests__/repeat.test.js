@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { createPage, questionBubble, input, Stop, Repeat, runChat } from '..'
-import { Chat } from '../ReactChat'
 import * as renderer from 'react-test-renderer'
+import { Chat } from '../ReactChat'
+import { createPage, questionBubble, input, Stop, Repeat, runChat } from '..'
 
 it('repeat', (done) => {
 	const page = createPage()

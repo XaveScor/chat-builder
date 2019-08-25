@@ -4,9 +4,6 @@ import { ChatMachine } from './ChatMachine'
 import type { SendMessageToExecutorEvent, SendMessageToMasterEvent } from './types'
 import { type PrevousPageResult, type MapPrevousPage, type NonFunction, type Config, Page } from './createPage'
 import { type WaitMessage } from './event'
-import * as React from 'react'
-import type { Props } from './createProps'
-import { runWithTimeout, ReturnError } from './runWithTimeout'
 
 async function callPrevousPageF<TProps, T: NonFunction>(
 	map: MapPrevousPage<TProps, T>,

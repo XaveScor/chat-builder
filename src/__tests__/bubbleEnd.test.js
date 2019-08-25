@@ -1,11 +1,9 @@
 /* @flow */
 import * as React from 'react'
-import { createPage, createPending, Stop, questionBubble, useChatBuilder, createInput, BubbleContainerEnd } from '..'
-import { Chat } from '../ReactChat'
 import * as renderer from 'react-test-renderer'
-import { delay } from '../common'
 import { createEvent } from '../event'
 import { createChatMock, Mutex } from './common'
+import { createPage, Stop, questionBubble, useChatBuilder, createInput, BubbleContainerEnd } from '..'
 
 it('useChatBuilder', async () => {
 	const input = createInput({
@@ -35,7 +33,7 @@ it('useChatBuilder', async () => {
 
 	const start = createEvent<void>()
 	const mutex = new Mutex()
-	function rerender(count) {
+	function rerender() {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)
@@ -82,7 +80,7 @@ it('children: react component', async () => {
 
 	const start = createEvent<void>()
 	const mutex = new Mutex()
-	function rerender(count) {
+	function rerender() {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)

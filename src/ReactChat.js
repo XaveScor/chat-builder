@@ -9,11 +9,10 @@ import { context } from './BubbleEnd'
 
 type DialogProps = {
 	views: $PropertyType<State, 'dialog'>,
-	pending?: $PropertyType<PendingConfig, 'pending'>,
 	bubbleContainer?: BubbleContainer,
 	bubbleEnd: React.Node,
 }
-const Dialog = ({ views, pending: Pending, bubbleContainer: Container, bubbleEnd }: DialogProps) => {
+const Dialog = ({ views, bubbleContainer: Container, bubbleEnd }: DialogProps) => {
 	const list = Array.from(views.map((v, idx) => <v.component {...v.props} key={idx} />).values())
 	const totalView = (
 		<>
@@ -76,7 +75,7 @@ export const Chat = <TProps>(props: Props<TProps>) => {
 
 	return (
 		<>
-			<Dialog views={dialog} pending={pending?.pending} bubbleEnd={bubbleEnd} bubbleContainer={bubbleContainer} />
+			<Dialog views={dialog} bubbleEnd={bubbleEnd} bubbleContainer={bubbleContainer} />
 			<context.Provider value={setBubbleEnd}>
 				{!stopped && input && <input.component {...input.props} key={dialog.size} />}
 			</context.Provider>

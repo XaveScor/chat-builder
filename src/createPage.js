@@ -1,8 +1,6 @@
 /* @flow */
 
 import type { Bubble, AnswerBubble } from './createBubble'
-import * as React from 'react'
-import type { EventType } from './event'
 import type { Input } from './createInput'
 import { type Props, createProps } from './createProps'
 import { ValidationError } from './ValidationError'
@@ -26,7 +24,7 @@ type InternalNonAnswerableStep<TProps, TInput> = {|
 	inputProps?: TInput,
 |}
 
-type InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput> = {|
+type InternalAnswerableStep<TProps, TAns, TPropsAns, TInput> = {|
 	id?: any,
 	question: Bubble<TProps>,
 	questionProps?: TProps,
@@ -39,13 +37,13 @@ type InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput> = {|
 	inputProps?: TInput,
 |}
 
-export type InternalStep<TProps, TAns, TPropsAns, TErr, TInput> =
+export type InternalStep<TProps, TAns, TPropsAns, TInput> =
 	| InternalNonAnswerableStep<TProps, TInput>
-	| InternalAnswerableStep<TProps, TAns, TPropsAns, TErr, TInput>
+	| InternalAnswerableStep<TProps, TAns, TPropsAns, TInput>
 
 export type Step = InternalStep<*, *, *, *, *>
 export type NonAnswerableStep = InternalNonAnswerableStep<*, *>
-export type AnswerableStep = InternalAnswerableStep<*, *, *, *, *>
+export type AnswerableStep = InternalAnswerableStep<*, *, *, *>
 
 export type TimeoutConfig<TProps> = {|
 	duration: number,

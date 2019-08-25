@@ -1,8 +1,8 @@
 /* @flow */
+import * as renderer from 'react-test-renderer'
 import { runChat } from '../runChat'
 import { Page } from '../createPage'
 import type { NotifyViewEvent, StopEvent, PendingConfig } from '../types'
-import * as renderer from 'react-test-renderer'
 import { type EventType, createEvent } from '../event'
 
 export function createChatMock(notifyRender: (number) => void, start: EventType<void>) {
@@ -25,7 +25,9 @@ export function createChatMock(notifyRender: (number) => void, start: EventType<
 		const stopEvent = createEvent<void>()
 		stopEvent.watch(() => {
 			renderer.act(() => {
-				setup.stopEvent && setup.stopEvent()
+				if (typeof setup.stopEvent === 'function') {
+					setup.stopEvent()
+				}
 			})
 		})
 

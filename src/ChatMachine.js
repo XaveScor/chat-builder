@@ -1,7 +1,6 @@
 // @flow
 import type { PendingConfig, StopEvent } from './types'
-import type { Step, TimeoutConfig, NonAnswerableStep, AnswerableStep } from './createPage'
-import type { Bubble, AnswerBubble } from './createBubble'
+import type { Step, NonAnswerableStep, AnswerableStep } from './createPage'
 import { ValidationError } from './ValidationError'
 import { voidF } from './common'
 import type { LowLevelChatMachine } from './LowLevelChatMachine'

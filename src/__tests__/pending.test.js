@@ -1,11 +1,11 @@
 /* @flow */
 import * as React from 'react'
-import { createPage, createPending, input, Stop, questionBubble, useChatBuilder, createInput } from '..'
-import { Chat } from '../ReactChat'
 import * as renderer from 'react-test-renderer'
+import { Chat } from '../ReactChat'
 import { delay } from '../common'
 import { createEvent } from '../event'
 import { createChatMock, Mutex } from './common'
+import { createPage, createPending, input, Stop, questionBubble, useChatBuilder, createInput } from '..'
 
 const pending = createPending({
 	component: () => 'pending',
@@ -40,7 +40,7 @@ it('ConformsForm', async () => {
 
 	const start = createEvent<void>()
 	const mutex = new Mutex()
-	function rerender(count) {
+	function rerender() {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)
@@ -91,7 +91,7 @@ it('useChatBuilder', async () => {
 
 	const start = createEvent<void>()
 	const mutex = new Mutex()
-	function rerender(count) {
+	function rerender() {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)
