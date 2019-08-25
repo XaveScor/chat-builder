@@ -4,9 +4,9 @@ import * as React from 'react'
 export type Pending = React.ComponentType<any>
 
 type CreatePendingArg = {
-    component: Pending
+	component: Pending,
 }
 
 export function createPending(arg: CreatePendingArg) {
-    return arg.component
+	return arg.component
 }

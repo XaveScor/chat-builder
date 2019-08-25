@@ -1,42 +1,42 @@
 /* @flow */
-import {createPage, input, Stop, runChat} from '..'
+import { createPage, input, Stop, runChat } from '..'
 
-it('createPage arg: function', done => {
-    const startPage = createPage(() => {
-        return {
-            steps: [],
-            nextPage: stopPage,
-        }
-    });
-    const stopPage = createPage(() => {
-        done()
-        return {
-            steps: [],
-            nextPage: Stop,
-        }
-    });
+it('createPage arg: function', (done) => {
+	const startPage = createPage(() => {
+		return {
+			steps: [],
+			nextPage: stopPage,
+		}
+	})
+	const stopPage = createPage(() => {
+		done()
+		return {
+			steps: [],
+			nextPage: Stop,
+		}
+	})
 
-    runChat(startPage, {
-        notifyView: () => {},
-    })
-});
+	runChat(startPage, {
+		notifyView: () => {},
+	})
+})
 
-it('createPage arg: async function', done => {
-    const startPage = createPage(async () => {
-        return {
-            steps: [],
-            nextPage: stopPage,
-        }
-    });
-    const stopPage = createPage(async () => {
-        done()
-        return {
-            steps: [],
-            nextPage: Stop,
-        }
-    });
+it('createPage arg: async function', (done) => {
+	const startPage = createPage(async () => {
+		return {
+			steps: [],
+			nextPage: stopPage,
+		}
+	})
+	const stopPage = createPage(async () => {
+		done()
+		return {
+			steps: [],
+			nextPage: Stop,
+		}
+	})
 
-    runChat(startPage, {
-        notifyView: () => {},
-    })
-});
+	runChat(startPage, {
+		notifyView: () => {},
+	})
+})
