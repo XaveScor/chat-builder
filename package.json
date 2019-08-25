@@ -24,6 +24,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-jest": "^24.8.0",
     "flow-bin": "^0.104.0",
+    "husky": "^3.0.4",
     "jest": "^24.8.0",
     "path": "^0.12.7",
     "prettier": "^1.18.2",
@@ -37,7 +38,8 @@
   "scripts": {
     "build": "node ./scripts/build.js",
     "test": "jest",
-    "release": "yarn test && yarn build && npm publish"
+    "release": "yarn test && yarn build && npm publish",
+    "pretty": "prettier \"src/**/*.js\" --write"
   },
   "dependencies": {
     "immutable": "^4.0.0-rc.12"
