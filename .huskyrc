@@ -1,5 +1,5 @@
 {
     "hooks": {
-        "pre-commit": "yarn pretty"
+        "pre-commit": "yarn pretty && git add"
     }
 }
