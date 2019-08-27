@@ -1,6 +1,5 @@
 /* @flow */
 
-import * as rerenderer from 'react-test-renderer'
 import { createEvent } from '../event'
 import type { NotifyViewEvent } from '../types'
 import { createChatMock, Mutex } from './common'
