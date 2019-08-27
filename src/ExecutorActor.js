@@ -22,6 +22,7 @@ export class ExecutorActor {
 
 	async run() {
 		const breakEvent = createEvent<void>()
+		let stepId = 0
 		while (true) {
 			const message = await this.getMasterMessageAsync()
 			switch (message.type) {
@@ -44,17 +45,26 @@ export class ExecutorActor {
 
 								for (let i = 0; i < steps.length; ++i) {
 									const step = steps[i]
+									stepId++
+									const onChange = async () => {
+										const result = await this.chatMachine.editStep(pageId, step, i, onBackToPage, pageId)
+										results[i].value = result
+									}
 									const stepResult = await this.chatMachine.runStep({
 										config: step,
 										orderId: i,
 										onBackToPage,
+										onChange,
 										pageId,
+										stepId,
 									})
 									results.push({
 										id: step.id,
 										value: stepResult,
 									})
 								}
+
+								this.chatMachine.removeEdits()
 
 								return results
 							},

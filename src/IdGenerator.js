@@ -1,6 +1,6 @@
 /* @flow */
 
-export opaque type Id = number
+export opaque type Id: number = number
 
 export class IdGenerator {
 	id = 0

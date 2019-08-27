@@ -1,5 +1,6 @@
 /* @flow */
 
+import * as rerenderer from 'react-test-renderer'
 import { createEvent } from '../event'
 import type { NotifyViewEvent } from '../types'
 import { createChatMock, Mutex } from './common'
@@ -14,10 +15,10 @@ it('back function', async () => {
 	const arterBackMutex = new Mutex()
 	function rerender(count) {
 		switch (count) {
-			case 2:
+			case 3:
 				beforeBackMutex.release()
 				break
-			case 3:
+			case 5:
 				arterBackMutex.release()
 				break
 		}
@@ -65,6 +66,7 @@ it('back function', async () => {
 	if (!dialogBeforeBack) {
 		throw new Error()
 	}
+
 	expect(dialogBeforeBack.dialog.size).toBe(2)
 	expect(dialogBeforeBack.dialog.get(0).props.onBackToPage).not.toBe(null)
 	expect(dialogBeforeBack.dialog.get(0).props.onBackToPage).toBeInstanceOf(Function)
@@ -83,7 +85,7 @@ it('back function', async () => {
 it('orderId', async () => {
 	const firstPage = createPage()
 
-	const start = createEvent/*:: <void> */()
+	const start = createEvent<void>()
 	const mutex = new Mutex()
 	function rerender(count) {
 		switch (count) {

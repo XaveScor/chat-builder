@@ -14,7 +14,7 @@ it('onSumbit function cannot sended after invalid validation', async () => {
 		mutex.release()
 	}
 	const chatMock = createChatMock(rerender, start)
-
+	const errorText = 'errorText'
 	firstPage.use({
 		steps: [
 			{
@@ -24,7 +24,7 @@ it('onSumbit function cannot sended after invalid validation', async () => {
 				},
 				isAnswerable: true,
 				answer: answerBubble,
-				validate: () => new ValidationError(),
+				validate: () => new ValidationError(errorText),
 				input,
 			},
 		],
@@ -55,6 +55,7 @@ it('onSumbit function cannot sended after invalid validation', async () => {
 	if (!invalidMessage) {
 		throw new Error()
 	}
-	expect(invalidMessage.dialog.size).toBe(1)
+	expect(invalidMessage.dialog.size).toBe(2)
+	expect(invalidMessage.input.props.error).toBe(errorText)
 	expect(invalidMessage.input.props.onSubmit).toBeDefined()
 })

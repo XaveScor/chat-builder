@@ -12,8 +12,8 @@ export type DialogElement = {
 }
 
 export type State = {
-	dialog: OrderedMap<any, DialogElement>,
-	input?: {
+	dialog: OrderedMap<any, ?DialogElement>,
+	input?: ?{
 		component: React.ComponentType<{}>,
 		props: {},
 	},

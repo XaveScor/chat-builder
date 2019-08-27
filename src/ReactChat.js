@@ -13,7 +13,7 @@ type DialogProps = {
 	bubbleEnd: React.Node,
 }
 const Dialog = ({ views, bubbleContainer: Container, bubbleEnd }: DialogProps) => {
-	const list = Array.from(views.map((v, idx) => <v.component {...v.props} key={idx} />).values())
+	const list = Array.from(views.map((v, idx) => v && <v.component {...v.props} key={idx} />).values())
 	const totalView = (
 		<>
 			{list}

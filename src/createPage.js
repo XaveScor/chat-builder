@@ -41,7 +41,7 @@ export type InternalStep<TProps, TAns, TPropsAns, TInput> =
 	| InternalNonAnswerableStep<TProps, TInput>
 	| InternalAnswerableStep<TProps, TAns, TPropsAns, TInput>
 
-export type Step = InternalStep<*, *, *, *, *>
+export type Step = InternalStep<*, *, *, *>
 export type NonAnswerableStep = InternalNonAnswerableStep<*, *>
 export type AnswerableStep = InternalAnswerableStep<*, *, *, *>
 
