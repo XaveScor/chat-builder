@@ -90,6 +90,7 @@ export class MasterActor<TProps> {
 						prevousPage: currentPage,
 						steps: executorMessage.results,
 					}
+					this.chatMachine.showPending()
 					currentPage = await callPrevousPageF(nextPage, result, props.getData)
 					break
 				case 'timeout':
@@ -100,6 +101,7 @@ export class MasterActor<TProps> {
 					if (timeout) {
 						currentPage = timeout.page
 					} else {
+						this.chatMachine.showPending()
 						currentPage = await callPrevousPageF(nextPage, result, props.getData)
 					}
 					break
