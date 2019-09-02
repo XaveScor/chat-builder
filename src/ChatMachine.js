@@ -69,54 +69,54 @@ export class ChatMachine {
 		pageId: number,
 	) {
 		const savedMessages: Array<[PageId, StepId, MessageId]> = []
-		this.lowLevelMachine.startTransaction()
-		while (this.messageHistory.length) {
-			const message = this.messageHistory[this.messageHistory.length - 1]
-			const [, currentStepId, messageId] = message
+		await this.lowLevelMachine.transaction(() => {
+			while (this.messageHistory.length) {
+				const message = this.messageHistory[this.messageHistory.length - 1]
+				const [, currentStepId, messageId] = message
 
-			if (currentStepId < stepId) {
-				break
+				if (currentStepId < stepId) {
+					break
+				}
+
+				savedMessages.push(this.messageHistory.pop())
+				this.lowLevelMachine.stage(messageId)
 			}
-
-			savedMessages.push(this.messageHistory.pop())
-			this.lowLevelMachine.stage(messageId)
-		}
-		this.lowLevelMachine.stopTransaction()
+		})
 
 		const answer = await this.runAnswerableStep(config, orderId, onBackToPage, stepId, onChange, pageId)
 
-		this.lowLevelMachine.startTransaction()
-		while (savedMessages.length) {
-			const message = savedMessages.pop()
-			const [pageId, currentStepId, messageId] = message
+		await this.lowLevelMachine.transaction(() => {
+			while (savedMessages.length) {
+				const message = savedMessages.pop()
+				const [pageId, currentStepId, messageId] = message
 
-			if (currentStepId === stepId) {
-				this.lowLevelMachine.removeStaged(messageId)
-				continue
+				if (currentStepId === stepId) {
+					this.lowLevelMachine.removeStaged(messageId)
+					continue
+				}
+
+				const newMessageId = this.lowLevelMachine.pushStaged(messageId)
+				this.messageHistory.push([pageId, currentStepId, newMessageId])
 			}
-
-			const newMessageId = this.lowLevelMachine.pushStaged(messageId)
-			this.messageHistory.push([pageId, currentStepId, newMessageId])
-		}
-		this.lowLevelMachine.stopTransaction()
+		})
 
 		return answer
 	}
 
 	async removeDialog(pageId: PageId) {
-		this.lowLevelMachine.startTransaction()
-		while (this.messageHistory.length) {
-			const message = last(this.messageHistory)
-			const [currentPageId, , messageId] = message
+		await this.lowLevelMachine.transaction(() => {
+			while (this.messageHistory.length) {
+				const message = this.messageHistory[this.messageHistory.length - 1]
+				const [currentPageId, , messageId] = message
 
-			if (currentPageId < pageId) {
-				break
+				if (currentPageId < pageId) {
+					break
+				}
+
+				this.messageHistory.pop()
+				this.lowLevelMachine.delete([messageId])
 			}
-
-			this.messageHistory.pop()
-			this.lowLevelMachine.delete([messageId])
-		}
-		this.lowLevelMachine.stopTransaction()
+		})
 	}
 
 	async stop() {

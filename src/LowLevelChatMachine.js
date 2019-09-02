@@ -11,23 +11,21 @@ export class LowLevelChatMachine {
 	inputs: OrderedMap<MessageId, ?DialogInput> = OrderedMap()
 	idGenerator = new IdGenerator()
 	stagedMessages = new Map<MessageId, DialogElement>()
-	transactionStarted = false
+	transactionCount = 0
 
 	constructor(notifyView: NotifyViewEvent) {
 		this.notifyView = notifyView
 	}
 
-	startTransaction() {
-		this.transactionStarted = true
-	}
-
-	stopTransaction() {
-		this.transactionStarted = false
+	async transaction(f: (void) => Promise<mixed> | mixed) {
+		++this.transactionCount
+		await Promise.resolve(f())
+		--this.transactionCount
 		this.reloadView()
 	}
 
 	reloadView() {
-		if (this.transactionStarted) {
+		if (this.transactionCount) {
 			return
 		}
 
