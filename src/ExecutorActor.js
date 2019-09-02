@@ -45,9 +45,17 @@ export class ExecutorActor {
 
 								for (let i = 0; i < steps.length; ++i) {
 									const step = steps[i]
-									stepId++
+
+									const currentStepId = ++stepId
 									const onChange = async () => {
-										const result = await this.chatMachine.editStep(pageId, step, i, onBackToPage, pageId)
+										const result = await this.chatMachine.editStep(
+											step,
+											i,
+											onBackToPage,
+											currentStepId,
+											onChange,
+											pageId,
+										)
 										results[i].value = result
 									}
 									const stepResult = await this.chatMachine.runStep({
@@ -56,7 +64,7 @@ export class ExecutorActor {
 										onBackToPage,
 										onChange,
 										pageId,
-										stepId,
+										stepId: currentStepId,
 									})
 									results.push({
 										id: step.id,

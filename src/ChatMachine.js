@@ -34,6 +34,9 @@ function removeEditCallback(dialogElement: ?DialogElement): ?DialogElement {
 	}
 }
 
+type PageId = number
+type StepId = number
+
 const defaultTimeout = 500
 export class ChatMachine {
 	+lowLevelMachine: LowLevelChatMachine
@@ -41,10 +44,8 @@ export class ChatMachine {
 	+stopEvent: ?StopEvent
 
 	pendingStarted: ?PendingStartedType = null
-	mapStepToMessage = new Map<number, Set<MessageId>>()
-	mapPageToStep = new Map<number, Set<number>>()
 	lastPageId = -1
-	savedMessages = new Set<MessageId>()
+	messageHistory: Array<[PageId, StepId, MessageId]> = []
 
 	constructor(lowLevelMachine: LowLevelChatMachine, pending: ?PendingConfig, stopEvent: ?StopEvent) {
 		this.lowLevelMachine = lowLevelMachine
@@ -53,83 +54,69 @@ export class ChatMachine {
 	}
 
 	removeEdits() {
-		const steps = this.mapPageToStep.get(this.lastPageId)
-		if (!steps) {
-			return
-		}
-		const messages = Array.from(steps)
-			.map((stepId) => this.mapStepToMessage.get(stepId))
-			.filter(Boolean)
-			.flatMap((set) => Array.from(set))
-		for (const id of messages) {
-			this.lowLevelMachine.replace(id, removeEditCallback)
-		}
+		this.messageHistory
+			.filter((el) => el[0] === this.lastPageId)
+			.map((el) => el[2])
+			.forEach((messageId) => this.lowLevelMachine.replace(messageId, removeEditCallback))
 	}
 
 	async editStep(
-		stepId: number,
 		config: AnswerableStep,
 		orderId: number,
 		onBackToPage: ?(void) => mixed,
+		stepId: number,
+		onChange: (void) => mixed,
 		pageId: number,
 	) {
+		const savedMessages: Array<[PageId, StepId, MessageId]> = []
 		this.lowLevelMachine.startTransaction()
-		for (const [currentStepId, messages] of this.mapStepToMessage) {
+		while (this.messageHistory.length) {
+			const message = this.messageHistory[this.messageHistory.length - 1]
+			const [, currentStepId, messageId] = message
+
 			if (currentStepId < stepId) {
-				continue
+				break
 			}
-			for (const messageId of messages) {
-				this.savedMessages.add(messageId)
-				this.lowLevelMachine.stage(messageId)
-			}
+
+			savedMessages.push(this.messageHistory.pop())
+			this.lowLevelMachine.stage(messageId)
 		}
 		this.lowLevelMachine.stopTransaction()
 
-		const answer = await this.runAnswerableStep(config, orderId, onBackToPage, stepId, () => {}, pageId)
-
-		const messages = this.mapStepToMessage.get(stepId)
-		if (!messages) {
-			throw new Error('you cannot edit stepId = ' + stepId)
-		}
-		for (const messageId of messages) {
-			this.lowLevelMachine.removeStaged(messageId)
-		}
+		const answer = await this.runAnswerableStep(config, orderId, onBackToPage, stepId, onChange, pageId)
 
 		this.lowLevelMachine.startTransaction()
-		for (const savedMessageId of this.savedMessages) {
-			this.lowLevelMachine.pushStaged(savedMessageId)
+		while (savedMessages.length) {
+			const message = savedMessages.pop()
+			const [pageId, currentStepId, messageId] = message
+
+			if (currentStepId === stepId) {
+				this.lowLevelMachine.removeStaged(messageId)
+				continue
+			}
+
+			const newMessageId = this.lowLevelMachine.pushStaged(messageId)
+			this.messageHistory.push([pageId, currentStepId, newMessageId])
 		}
 		this.lowLevelMachine.stopTransaction()
 
 		return answer
 	}
 
-	async removeDialog(id: number) {
-		const deletedPageIds: Array<number> = []
-		const deletedStepIds: Array<number> = []
-		const deletedMessageIds: Array<MessageId> = []
-		for (const [pageId, stepsSet] of this.mapPageToStep) {
-			if (pageId < id) {
-				continue
+	async removeDialog(pageId: PageId) {
+		this.lowLevelMachine.startTransaction()
+		while (this.messageHistory.length) {
+			const message = last(this.messageHistory)
+			const [currentPageId, , messageId] = message
+
+			if (currentPageId < pageId) {
+				break
 			}
 
-			const stepIds = Array.from(stepsSet)
-				.map((stepId) => this.mapStepToMessage.get(stepId))
-				.filter(Boolean)
-				.flatMap((messages) => Array.from(messages))
-
-			deletedStepIds.push(...stepsSet)
-			deletedMessageIds.push(...stepIds)
-			deletedPageIds.push(pageId)
+			this.messageHistory.pop()
+			this.lowLevelMachine.delete([messageId])
 		}
-
-		this.lowLevelMachine.delete(deletedMessageIds)
-		for (const pageId of deletedPageIds) {
-			this.mapPageToStep.delete(pageId)
-		}
-		for (const stepId of deletedStepIds) {
-			this.mapStepToMessage.delete(stepId)
-		}
+		this.lowLevelMachine.stopTransaction()
 	}
 
 	async stop() {
@@ -193,7 +180,8 @@ export class ChatMachine {
 							onSubmit: handleInputSubmit,
 						},
 					})
-					return this.saveMessageId(errorMessageId, stepId, pageId)
+
+					return this.messageHistory.push([pageId, stepId, errorMessageId])
 				}
 
 				const answerMessageId = this.lowLevelMachine.push(
@@ -212,7 +200,7 @@ export class ChatMachine {
 						props: inputProps,
 					},
 				)
-				this.saveMessageId(answerMessageId, stepId, pageId)
+				this.messageHistory.push([pageId, stepId, answerMessageId])
 
 				const resultF = config.resultF || ((_) => _)
 				resolve(resultF(answer))
@@ -235,24 +223,8 @@ export class ChatMachine {
 				},
 			)
 
-			this.saveMessageId(questionMessageId, stepId, pageId)
+			this.messageHistory.push([pageId, stepId, questionMessageId])
 		})
-	}
-
-	saveMessageId(messageId: MessageId, stepId: number, pageId: number) {
-		let messagesSet = this.mapStepToMessage.get(stepId)
-		if (!messagesSet) {
-			messagesSet = new Set<MessageId>()
-			this.mapStepToMessage.set(stepId, messagesSet)
-		}
-		messagesSet.add(messageId)
-
-		let stepsSet = this.mapPageToStep.get(pageId)
-		if (!stepsSet) {
-			stepsSet = new Set<number>()
-			this.mapPageToStep.set(pageId, stepsSet)
-		}
-		stepsSet.add(stepId)
 	}
 
 	async runNonAnswerableStep(
@@ -280,7 +252,7 @@ export class ChatMachine {
 			},
 		)
 
-		this.saveMessageId(messageId, stepId, pageId)
+		this.messageHistory.push([pageId, stepId, messageId])
 	}
 
 	async runStep({ config, orderId, onBackToPage, onChange, stepId, pageId }: Args) {
