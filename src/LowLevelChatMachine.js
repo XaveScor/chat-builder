@@ -89,7 +89,7 @@ export class LowLevelChatMachine {
 
 	replace(
 		id: MessageId,
-		setDialogElement?: (?DialogElement) => ?DialogElement,
+		setDialogElement?: ?(?DialogElement) => ?DialogElement,
 		setInput?: (?DialogInput) => ?DialogInput,
 	) {
 		if (setDialogElement) {

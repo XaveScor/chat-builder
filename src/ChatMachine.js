@@ -169,19 +169,20 @@ export class ChatMachine {
 		}
 		const validate = config.validate || (voidF: (any) => void)
 		return new Promise((resolve) => {
+			let questionMessageId
 			const handleInputSubmit = (answer: any) => {
 				const error = validate(answer)
 				if (error instanceof ValidationError) {
-					const errorMessageId = this.lowLevelMachine.push(null, {
+					this.lowLevelMachine.replace(questionMessageId, null, () => ({
 						component: config.input,
 						props: {
 							...inputProps,
 							error: error.message,
 							onSubmit: handleInputSubmit,
 						},
-					})
+					}))
 
-					return this.messageHistory.push([pageId, stepId, errorMessageId])
+					return
 				}
 
 				const answerMessageId = this.lowLevelMachine.push(
@@ -205,7 +206,7 @@ export class ChatMachine {
 				const resultF = config.resultF || ((_) => _)
 				resolve(resultF(answer))
 			}
-			const questionMessageId = this.lowLevelMachine.push(
+			questionMessageId = this.lowLevelMachine.push(
 				{
 					component: config.question,
 					props: {
